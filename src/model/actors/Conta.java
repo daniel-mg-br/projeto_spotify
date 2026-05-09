@@ -39,4 +39,8 @@ public class Conta {
 		this.setStatus("Ativo");
 		this.setDataCriacao();
 	}
+	
+	public void Teste() {
+		System.out.println("Isso é um teste");
+	}
 }

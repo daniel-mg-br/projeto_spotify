@@ -1,5 +1,78 @@
 package model.actors;
+import java.util.Calendar;
+import java.util.Date;
 
+// Classe Usuario, representando um usuário geral do sistema, está associado a uma conta
 public abstract class Usuario {
+	
+	// Atributos privados
+    private Conta conta;
+    private int id;
+    private String nome;
+    private String sexo;
+    private Date aniversario;
+    
+    // Métodos Getter e Setter padrão
+    public Conta getConta() {return this.conta;}
+    public void setConta(Conta conta) {this.conta = conta;}
+    
+    public int getId() {return this.id;}
+    public void setId(int id) {this.id = id;}
+    
+    public String getNome() {return this.nome;}
+    public void setNome(String nome) {this.nome = nome;}
+    
+    public String getSexo() {return this.sexo;}
+    public void setSexo(String sexo) {this.sexo = sexo;}
+    
+    public Date getAniversario() {return this.aniversario;}
+    public void setAniversario(Date aniversario) {this.aniversario = aniversario;}
+    
+    // Método Construtor
+    public Usuario(Conta conta, int id, String nome, String sexo, Date aniversario) {
+        this.conta = conta;
+        this.id = id;
+        this.nome = nome;
+        this.sexo = sexo;
+        this.aniversario = aniversario;
+    }
+    
+    // Método para alterar o nome do usuário, com verificação
+    public boolean alterarNome(String novoNome) {
+    	if (novoNome == null || novoNome.equalsIgnoreCase(this.getNome())) {
+    		return false;
+    	}
+        this.nome = novoNome;
+        return true;
+    }
+    
+    // Método para alterar o sexo do usuário, com verificação
+    public boolean alterarSexo(String novoSexo) {
+    	if (novoSexo == null || novoSexo.equalsIgnoreCase(this.getSexo())) {
+    		return false;
+    	}
+        this.sexo = novoSexo;
+        return true;
+    }
+    
+    // Método para calcular a idade do usuário com base no seu aniversário
+    public int calcularIdade() {
 
+        Calendar hoje = Calendar.getInstance();
+        Calendar nascimento = Calendar.getInstance();
+
+        nascimento.setTime(aniversario);
+
+        int idade = hoje.get(Calendar.YEAR) - nascimento.get(Calendar.YEAR);
+
+        return idade;
+    }
+    
+    // Método para recuperar os dados do usuário
+    public String obterDados() {
+        return "Id: " + this.getId() +
+               "\nNome: " + this.getNome() +
+               "\nSexo: " + this.getSexo() +
+               "\nIdade: " + this.calcularIdade();
+    }
 }

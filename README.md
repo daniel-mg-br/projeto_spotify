@@ -15,7 +15,7 @@
 	<li>Classes conceituais</li>
 </ol>
 
-<p><strong>Os tópico 1 citado acima tem como objeivo auxiliar no acompanhamento do trabalho final, explicitando os pacotes, onde estão as classes e sobre a organização e desenvolvimento do projeto</strong></p>
+<p><strong>O tópico 1 citado acima tem como objetivo auxiliar no acompanhamento do trabalho final, explicitando os pacotes, onde estão as classes e sobre a organização e desenvolvimento do projeto</strong></p>
 
 <h1>Organização de pacotes e código</h1>
 

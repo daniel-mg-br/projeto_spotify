@@ -42,6 +42,8 @@
 	<br>
 	<li>Alguns métodos envolvendo a manipulação de dados de usuários e conteúdos são temporários, e 	alguns estão incompletos, visto que a integração com banco de dados e a interface gráfica serão 	implementadas posteriormente;</li>
 	<br>
+	<li>Semelhante ao ponto anterior, alguns métodos relacionados às Playlists, Podcasts e Álbuns serão 	revisados quanto à lógica, assim, o diagrama de classes será atualizado também</li>
+	<br>
 </ul>
 
 <h1>Definição e requisitos do projeto</h1>

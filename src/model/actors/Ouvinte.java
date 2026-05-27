@@ -10,7 +10,6 @@ public class Ouvinte extends Usuario {
 	// Atributos privados
 	private int totalMinutos;
 	private String generoFavorito;
-	private boolean premium;
 	
 	// Listas para os playlist, álbuns e podcasts que o usuário escuta
 	private List <Playlist> playlists;
@@ -19,13 +18,10 @@ public class Ouvinte extends Usuario {
 	
 	// Métodos Getter e Setter padrão
 	public int getTotalMinutos() {return this.totalMinutos;}
-	public void setTotalMinutos(int minutos) {this.totalMinutos += minutos;}
+	public void setTotalMinutos(int minutos) {this.totalMinutos = minutos;}
 	
 	public String getGeneroFavorito() {return this.generoFavorito;}
 	public void setGeneroFavorito(String generoFavorito) {this.generoFavorito = generoFavorito;}
-	
-	public boolean isPremium() {return this.premium;}
-	public void setPremium(boolean b) {this.premium = b;}
 	
 	public List <Playlist> getPlaylists() {
 		return this.playlists;
@@ -44,7 +40,6 @@ public class Ouvinte extends Usuario {
 		super(conta, id, nome, sexo, aniversario);
 		this.totalMinutos = 0;
 		this.generoFavorito = "";
-		this.premium = false;
 		
 		this.playlists = new ArrayList<>();
 		this.albunsFavoritos = new ArrayList<>();
@@ -56,6 +51,11 @@ public class Ouvinte extends Usuario {
 		return "";
 	}
 	
+	// Método para verificar se o Ouvinte tem o plano premium
+	public boolean isPremium() {
+		return this.getConta().getPlano().equalsIgnoreCase("premium");
+	}
+	
 	// Método para mostrar as playlists criadas pelo usuário
 	public void mostrarPlaylists() {
 		for (Playlist p : this.getPlaylists()) {
@@ -63,8 +63,15 @@ public class Ouvinte extends Usuario {
 		}
 	}
 	
-	// Método para criar / adicionar playlists
-	public boolean criarPlaylist(Playlist p) {
+	// Método para o usuário criar uma playlist nova
+	public Playlist criarPlaylist(int id, String nome, String descricao) {
+		Playlist nova =new Playlist(id, nome, descricao);
+		this.adicionarPlaylist(nova);
+		return nova;
+	}
+	
+	// Método para adicionar playlists à lista
+	public boolean adicionarPlaylist(Playlist p) {
 		if (this.playlists.contains(p) || p == null) {
 			return false;
 		}

@@ -24,7 +24,7 @@ public class Criador extends Usuario {
 	public void setBiografia(String biografia) {this.biografia = biografia;}
 	
 	public int getOuvintesMensais() {return this.ouvintesMensais;}
-	public void setOuvintesMensais(int ouvintes) {this.ouvintesMensais += ouvintes;}
+	public void setOuvintesMensais(int ouvintes) {this.ouvintesMensais = ouvintes;}
 	
 	public boolean isVerificado() {return this.verificado;}
 	public void setVerificado(boolean b) {this.verificado = b;}
@@ -61,8 +61,15 @@ public class Criador extends Usuario {
 		this.podcasts = new ArrayList<>(); 
 	}
 	
-	// Método para criar / adicionar um novo álbum à discografia
-	public boolean criarAlbum(Album a) {
+	// Método para o Criador criar um álbum novo
+	public Album criarAlbum(int id, String titulo, String tipo) {		
+		Album novo = new Album(id, titulo, tipo);
+		this.adicionarAlbum(novo);
+		return novo; 
+	}
+	
+	// Método para adicionar um novo álbum à discografia
+	public boolean adicionarAlbum(Album a) {
 		if (this.discografia.contains(a) || a == null) {
 			return false;
 		}
@@ -90,8 +97,15 @@ public class Criador extends Usuario {
 		}
 	}
 	
-	// Método para criar / adicionar um podcastas à lista do Criador, com verificação
-	public boolean criarPodcast(Podcast p) {
+	// Método para o Criador criar um podcast novo
+	public Podcast criarPodcast(int id, String nome, String tema) {
+		Podcast novo = new Podcast(id, nome, tema);
+		this.adicionarPodcast(novo);
+		return novo; 
+	}
+	
+	// Método para adicionar um podcast à lista do Criador, com verificação
+	public boolean adicionarPodcast(Podcast p) {
 		if (this.podcasts.contains(p) || p == null) {
 			return false;
 		}

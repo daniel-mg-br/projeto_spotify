@@ -62,7 +62,7 @@ public class Playlist {
         return "ID: " + this.getId() +
                "\nTítulo: " + this.getTitulo() +
                "\nDescrição: " + this.getDescricao() +
-               "\nCriada em: " + this.getDescricao() +
+               "\nCriada em: " + this.getCriacao() +
                "\nQuantidade de músicas: " + this.getTotalMusicas();
     }
     

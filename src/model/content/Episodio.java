@@ -1,5 +1,5 @@
 package model.content;
-import java.util.Date;
+import java.time.LocalDate; 
 import java.util.List;
 import java.util.ArrayList;
 
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Episodio extends Conteudo {
 	// Atributos privados
     private int numEpisodio;
-    private Date lancamento;
+    private LocalDate lancamento;
     
     // Lista de convidados do episódio
     private List<String> convidados;
@@ -15,11 +15,13 @@ public class Episodio extends Conteudo {
     // Método Construtor com apenas os dados de Conteúdo
     public Episodio(int id, String titulo, int duracaoMin) {
     	super(id, titulo, duracaoMin);
+    	this.numEpisodio = 0;
+    	this.lancamento = LocalDate.now();	
         convidados = new ArrayList<>();
     }
     
     // Método Construtor com todos os dados
-    public Episodio(int id, String titulo, int duracaoMin, int numEpisodio, Date lancamento) {
+    public Episodio(int id, String titulo, int duracaoMin, int numEpisodio, LocalDate lancamento) {
         super(id, titulo, duracaoMin);
 
         this.numEpisodio = numEpisodio;
@@ -31,8 +33,8 @@ public class Episodio extends Conteudo {
     public int getNumEpisodio() {return this.numEpisodio;}
     public void setNumEpisodio(int episodio) {this.numEpisodio = episodio;}
 
-    public Date getLancamento() {return this.lancamento;}
-    public void setLancamento(Date lancamento) {this.lancamento = lancamento;}
+    public LocalDate getLancamento() {return this.lancamento;}
+    public void setLancamento(LocalDate lancamento) {this.lancamento = lancamento;}
 
     public List<String> getConvidados() {return this.convidados;}
     

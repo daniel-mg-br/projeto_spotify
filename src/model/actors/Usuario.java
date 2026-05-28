@@ -1,6 +1,6 @@
 package model.actors;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.Period;
 
 // Classe Usuario, representando um usuário geral do sistema, está associado a uma conta
 public abstract class Usuario {
@@ -10,7 +10,7 @@ public abstract class Usuario {
     private int id;
     private String nome;
     private String sexo;
-    private Date aniversario;
+    private LocalDate aniversario;
     
     // Métodos Getter e Setter padrão
     public Conta getConta() {return this.conta;}
@@ -25,11 +25,11 @@ public abstract class Usuario {
     public String getSexo() {return this.sexo;}
     public void setSexo(String sexo) {this.sexo = sexo;}
     
-    public Date getAniversario() {return this.aniversario;}
-    public void setAniversario(Date aniversario) {this.aniversario = aniversario;}
+    public LocalDate getAniversario() {return this.aniversario;}
+    public void setAniversario(LocalDate aniversario) {this.aniversario = aniversario;}
     
     // Método Construtor
-    public Usuario(Conta conta, int id, String nome, String sexo, Date aniversario) {
+    public Usuario(Conta conta, int id, String nome, String sexo, LocalDate aniversario) {
         this.conta = conta;
         this.id = id;
         this.nome = nome;
@@ -57,15 +57,7 @@ public abstract class Usuario {
     
     // Método para calcular a idade do usuário com base no seu aniversário
     public int calcularIdade() {
-
-        Calendar hoje = Calendar.getInstance();
-        Calendar nascimento = Calendar.getInstance();
-
-        nascimento.setTime(aniversario);
-
-        int idade = hoje.get(Calendar.YEAR) - nascimento.get(Calendar.YEAR);
-
-        return idade;
+    	return Period.between(this.aniversario, LocalDate.now()).getYears();
     }
     
     // Método para recuperar os dados do usuário

@@ -1,9 +1,9 @@
 package model.actors;
 
 import model.content.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Date;
 
 // Classe Criador, filha de Usuário, que representa um criador de conteúdo da plataforma de streaming
 public class Criador extends Usuario {
@@ -38,7 +38,7 @@ public class Criador extends Usuario {
 	}
 	
 	// Método Construtor com apenas os dados de Usuário
-	public Criador(Conta conta, int id, String nome, String sexo, Date aniversario) {
+	public Criador(Conta conta, int id, String nome, String sexo, LocalDate aniversario) {
 		super(conta, id, nome, sexo, aniversario);
 		this.nomeArtistico = "";
 		this.biografia = "";
@@ -50,7 +50,7 @@ public class Criador extends Usuario {
 	}
 	
 	// Método Construtor com todos os dados do Criador
-	public Criador(Conta conta, int id, String nome, String sexo, Date aniversario, String nomeArtistico, String biografia) {
+	public Criador(Conta conta, int id, String nome, String sexo, LocalDate aniversario, String nomeArtistico, String biografia) {
 		super(conta, id, nome, sexo, aniversario);
 		this.nomeArtistico = nomeArtistico;
 		this.biografia = biografia;

@@ -23,6 +23,8 @@ public class Musica extends Conteudo {
     // Método Construtor com os dados apenas do Conteúdo
     public Musica(int id, String titulo, int duracaoMin) {
     	super(id, titulo, duracaoMin);
+    	this.genero = "";
+    	this.letra = "";
         equipe = new ArrayList<>();
     }
     

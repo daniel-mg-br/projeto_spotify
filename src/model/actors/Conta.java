@@ -5,13 +5,13 @@ import java.time.LocalDate;
 public class Conta {
 	// Atributos privados da Conta, incluindo um estático para gerar um ID sequencial (temporário)
 	private static int codSequencia = 1;
-	private int idUsuario;
+	private int id;
 	private String login, senha, plano, status;
 	private LocalDate dataCriacao;
 	
 	// Métodos Getter e Setter padrão
-	public int getIdUsuario() {return this.idUsuario;}
-	public void setIdUsuario(int idUsuario) {this.idUsuario = idUsuario;}
+	public int getId() {return this.id;}
+	public void setId(int id) {this.id = id;}
 	
 	public String getLogin() {return this.login;}
 	public void setLogin(String login) {this.login = login;}
@@ -27,16 +27,16 @@ public class Conta {
 	
 	// A data de criação da conta é definida como a data atual
 	public LocalDate getDataCriacao() {return this.dataCriacao;}
-	public void setDataCriacao() {this.dataCriacao = LocalDate.now();}
+	public void setDataCriacao(LocalDate dataCriacao) {this.dataCriacao = dataCriacao;}
 	
 	// Método Construtor
 	public Conta(String login, String senha) {
-		this.idUsuario = codSequencia;
+		this.id = codSequencia;
 		this.login = login;
 		this.senha = senha;
 		this.plano = "Free";
-		this.status = "Ativo";
-		this.setDataCriacao();
+		this.status = "Ativa";
+		this.setDataCriacao(LocalDate.now());
 		codSequencia++;
 	}
 	
@@ -72,7 +72,7 @@ public class Conta {
 	
 	// Método que retorna os dados da conta (String)
 	public String getDados() {
-		return "ID: " + this.getIdUsuario() +
+		return "ID: " + this.getId() +
 				"Login: " + this.getLogin() +
 				"Senha: " + this.getSenha() +
 				"Plano: " + this.getPlano() +

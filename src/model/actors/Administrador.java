@@ -1,6 +1,7 @@
 package model.actors;
+
 import model.content.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 // Classe Administrador, filha de Usuario, representa um moderador do sistema operando sobre os dados
 public class Administrador extends Usuario {
@@ -12,7 +13,7 @@ public class Administrador extends Usuario {
     public void setCredencial(String credencial) {this.credencial = credencial;}
     
     // Método Construtor
-    public Administrador(Conta conta, int id, String nome, String sexo, Date aniversario, String credencial) {
+    public Administrador(Conta conta, int id, String nome, String sexo, LocalDate aniversario, String credencial) {
     	super(conta, id, nome, sexo, aniversario);
         this.credencial = credencial;
     }

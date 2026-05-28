@@ -1,9 +1,9 @@
 package model.actors;
 
 import model.content.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Date;
 
 // Classe Ouvinte, filha de Usuário, representando um ouvinte da plataforma de streaming
 public class Ouvinte extends Usuario {
@@ -36,7 +36,7 @@ public class Ouvinte extends Usuario {
 	}
 	
 	// Método Construtor
-	public Ouvinte(Conta conta, int id, String nome, String sexo, Date aniversario) {
+	public Ouvinte(Conta conta, int id, String nome, String sexo, LocalDate aniversario) {
 		super(conta, id, nome, sexo, aniversario);
 		this.totalMinutos = 0;
 		this.generoFavorito = "";

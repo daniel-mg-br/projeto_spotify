@@ -1,5 +1,5 @@
 package model.content;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -11,28 +11,34 @@ public class Album {
     private String titulo;
     private String tipo;
     private boolean status;
-    private Date lancamento;
+    private LocalDate lancamento;
     private int numeroFaixas;
     
     // Lista de faixa(s) que compõem um álbum
     private List<Musica> musicas;
     
-    // Método Construtor com alguns atributos padrão definidos
-    public Album() {
-        this.musicas = new ArrayList<>();
+    // Método Construtor padrão
+    public Album(String titulo, String tipo) {
+    	this.id = 0;
+    	this.titulo = titulo;
+    	this.tipo = tipo;
+    	this.lancamento = LocalDate.now();
         this.numeroFaixas = 0;
         this.status = false;
+        
+        this.musicas = new ArrayList<>();
     }
     
-    // Método Construtor com todos os dados do Álbum
-    public Album(int id, String titulo, String tipo) {
+    // Método Construtor com todos os dados (recuperação bd -> objeto)
+    public Album(int id, String titulo, String tipo, boolean status, LocalDate lancamento, int numeroFaixas) {
         this.id = id;
         this.titulo = titulo;
         this.tipo = tipo;
-
+        this.numeroFaixas = numeroFaixas;
+        this.status = status;
+        this.lancamento = lancamento;
+        
         this.musicas = new ArrayList<>();
-        this.numeroFaixas = 0;
-        this.status = false;
     }
     
     // Métodos Getter e Setter Padrão
@@ -48,8 +54,8 @@ public class Album {
     public boolean isStatus() {return this.status;}
     public void setStatus(boolean status) {this.status = status;}
 
-    public Date getLancamento() {return this.lancamento;}
-    public void setLancamento(Date lancamento) {this.lancamento = lancamento;}
+    public LocalDate getLancamento() {return this.lancamento;}
+    public void setLancamento(LocalDate lancamento) {this.lancamento = lancamento;}
     
     public int getNumeroFaixas() {return this.numeroFaixas;}
     public void setNumeroFaixas(int numeroFaixas) {this.numeroFaixas = numeroFaixas;}
@@ -106,9 +112,8 @@ public class Album {
     
     // Método para alterar o status de lançamento do álbum
     public void lancarAlbum() {
-
-        status = true;
-        lancamento = new Date();
+        this.status = true;
+        this.lancamento = LocalDate.now();
 
         System.out.println("Álbum lançado com sucesso!");
     }

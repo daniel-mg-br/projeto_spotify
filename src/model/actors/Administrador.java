@@ -12,10 +12,16 @@ public class Administrador extends Usuario {
     public String getCredencial() {return this.credencial;}
     public void setCredencial(String credencial) {this.credencial = credencial;}
     
-    // Método Construtor
+    // Método Construtor padrão
+    public Administrador(Conta conta, String nome, String sexo, LocalDate aniversario, String credencial) {
+    	super(conta, nome, sexo, aniversario);
+        this.credencial = credencial;
+    }
+    
+    // Método Construtor com todos os dados (recuperação bd -> objeto)
     public Administrador(Conta conta, int id, String nome, String sexo, LocalDate aniversario, String credencial) {
     	super(conta, id, nome, sexo, aniversario);
-        this.credencial = credencial;
+    	this.credencial = credencial;
     }
     
     // Método temporário / incompleto: operação de suspenão de usuários
@@ -36,6 +42,14 @@ public class Administrador extends Usuario {
     // Método temporário / incompleto: operação de consulta de conteúdo
     public Conteudo consultarConteudo(Conteudo conteudo) {
         return conteudo;
+    }
+    
+    // Método para recuperar os dados do Administrador
+    @Override
+    public String obterDados() {
+    	String superDados = super.obterDados();
+    	return superDados + "\n" +
+    		   "Credencial: " + this.getCredencial();	
     }
 }
 

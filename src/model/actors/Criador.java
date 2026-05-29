@@ -38,8 +38,8 @@ public class Criador extends Usuario {
 	}
 	
 	// Método Construtor com apenas os dados de Usuário
-	public Criador(Conta conta, int id, String nome, String sexo, LocalDate aniversario) {
-		super(conta, id, nome, sexo, aniversario);
+	public Criador(Conta conta, String nome, String sexo, LocalDate aniversario) {
+		super(conta, nome, sexo, aniversario);
 		this.nomeArtistico = "";
 		this.biografia = "";
 		this.ouvintesMensais = 0;
@@ -50,12 +50,12 @@ public class Criador extends Usuario {
 	}
 	
 	// Método Construtor com todos os dados do Criador
-	public Criador(Conta conta, int id, String nome, String sexo, LocalDate aniversario, String nomeArtistico, String biografia) {
+	public Criador(Conta conta, int id, String nome, String sexo, LocalDate aniversario, String nomeArtistico, String biografia, int ouvintesMensais, boolean verificado) {
 		super(conta, id, nome, sexo, aniversario);
 		this.nomeArtistico = nomeArtistico;
 		this.biografia = biografia;
-		this.ouvintesMensais = 0;
-		this.verificado = false;
+		this.ouvintesMensais = ouvintesMensais;
+		this.verificado = verificado;
 		
 		this.discografia = new ArrayList<>();
 		this.podcasts = new ArrayList<>(); 
@@ -63,7 +63,7 @@ public class Criador extends Usuario {
 	
 	// Método para o Criador criar um álbum novo
 	public Album criarAlbum(int id, String titulo, String tipo) {		
-		Album novo = new Album(id, titulo, tipo);
+		Album novo = new Album(titulo, tipo);
 		this.adicionarAlbum(novo);
 		return novo; 
 	}
@@ -99,7 +99,7 @@ public class Criador extends Usuario {
 	
 	// Método para o Criador criar um podcast novo
 	public Podcast criarPodcast(int id, String nome, String tema) {
-		Podcast novo = new Podcast(id, nome, tema);
+		Podcast novo = new Podcast(nome, tema);
 		this.adicionarPodcast(novo);
 		return novo; 
 	}
@@ -122,7 +122,9 @@ public class Criador extends Usuario {
 	// Método para recuperar os dados do Criador
 	@Override 
 	public String obterDados() {
-		return "Nome artístico: " + this.getNomeArtistico() + "\n" +
+		String superDados = super.obterDados();
+		return superDados + "\n" +
+			   "Nome artístico: " + this.getNomeArtistico() + "\n" +
 			   "Biografia: " + this.getBiografia() + "\n" +
 			   "Ouvintes mensais: " + this.getOuvintesMensais() + "\n" +
 			   "Verificado: " + this.isVerificado();

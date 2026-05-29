@@ -13,10 +13,12 @@ public class Episodio extends Conteudo {
     private List<String> convidados;
     
     // Método Construtor com apenas os dados de Conteúdo
-    public Episodio(int id, String titulo, int duracaoMin) {
-    	super(id, titulo, duracaoMin);
+    public Episodio(String titulo, int duracaoMin) {
+    	super(titulo, duracaoMin);
+    	
     	this.numEpisodio = 0;
-    	this.lancamento = LocalDate.now();	
+    	this.lancamento = LocalDate.now();
+    	
         convidados = new ArrayList<>();
     }
     
@@ -26,6 +28,7 @@ public class Episodio extends Conteudo {
 
         this.numEpisodio = numEpisodio;
         this.lancamento = lancamento;
+        
         this.convidados = new ArrayList<>();
     }
     

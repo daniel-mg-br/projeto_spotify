@@ -1,5 +1,5 @@
 package model.content;
-import java.util.Date;
+import java.time.LocalDate; 
 import java.util.List;
 import java.util.ArrayList;
 
@@ -8,7 +8,7 @@ public class Podcast  {
 	// Atributos privados
 	private int id, numEpisodios;
 	private String nome, tema;
-	private Date criacao;
+	private LocalDate criacao;
 	
 	// Lista de episódios do podcast
 	private List <Episodio> episodios;
@@ -26,21 +26,32 @@ public class Podcast  {
     public String getTema() {return this.tema;}
     public void setTema(String tema) {this.tema = tema;}
     
-    public Date getCriacao() {return this.criacao;}
-    public void setCriacao(Date criacao) {this.criacao = criacao;}
+    public LocalDate getCriacao() {return this.criacao;}
+    public void setCriacao(LocalDate criacao) {this.criacao = criacao;}
     
     public List <Episodio> getEpisodios() {
     	return this.episodios;
     }
     
     // Método Construtor
-    public Podcast(int id, String nome, String tema) {
+    public Podcast(String nome, String tema) {
+    	this.id = 0;
+    	this.nome = nome;
+    	this.tema = tema;
+    	this.numEpisodios = 0;
+    	this.criacao = LocalDate.now();
+    	
+    	this.episodios = new ArrayList<>();
+    }
+    
+    // Método Construtor com todos os dados (recuperação bd -> objeto)
+    public Podcast(int id, String nome, String tema, LocalDate criacao, int numEpisodios) {
     	this.id = id;
     	this.nome = nome;
     	this.tema = tema;
+    	this.criacao = criacao;
+    	this.numEpisodios = numEpisodios;
     	
-    	this.numEpisodios = 0;
-    	this.setCriacao(new Date());
     	this.episodios = new ArrayList<>();
     }
     

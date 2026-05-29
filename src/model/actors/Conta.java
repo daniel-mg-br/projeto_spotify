@@ -3,8 +3,7 @@ import java.time.LocalDate;
 
 // Classe Conta, a qual os estão vinculados (1 conta por usuário)
 public class Conta {
-	// Atributos privados da Conta, incluindo um estático para gerar um ID sequencial (temporário)
-	private static int codSequencia = 1;
+	// Atributos privados da Conta
 	private int id;
 	private String login, senha, plano, status;
 	private LocalDate dataCriacao;
@@ -29,15 +28,24 @@ public class Conta {
 	public LocalDate getDataCriacao() {return this.dataCriacao;}
 	public void setDataCriacao(LocalDate dataCriacao) {this.dataCriacao = dataCriacao;}
 	
-	// Método Construtor
+	// Método Construtor com os dados básicos para a criação
 	public Conta(String login, String senha) {
-		this.id = codSequencia;
+		this.id = 0;
 		this.login = login;
 		this.senha = senha;
 		this.plano = "Free";
 		this.status = "Ativa";
 		this.setDataCriacao(LocalDate.now());
-		codSequencia++;
+	}
+	
+	// Método Construtor com todos os dados (recuperação de dados bd -> objeto)
+	public Conta(int id, String login, String senha, String plano, String status, LocalDate dataCriacao) {
+		this.id = id;
+		this.login = login;
+		this.senha = senha;
+		this.plano = plano;
+		this.status = status;
+		this.dataCriacao = dataCriacao;
 	}
 	
 	// Método de validação de senha para login do usuário

@@ -1,5 +1,5 @@
 package model.content;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -10,30 +10,34 @@ public class Playlist {
     private String titulo;
     private String descricao;
     private boolean compartilhar;
-    private Date criacao;
+    private LocalDate criacao;
     private int totalMusicas;
     
     // Lista de músicas que compõem a playlist
     private List<Musica> musicas;
     
     // Método Construtor com alguns dados padrão preenchidos
-    public Playlist() {
-        this.musicas = new ArrayList<>();
-        this.criacao = new Date();
+    public Playlist(String titulo, String descricao) {
+    	this.id = 0;
+        this.titulo = titulo;
+        this.descricao = descricao;
+        this.criacao = LocalDate.now();
         this.totalMusicas = 0;
         this.compartilhar = false;
+        
+        this.musicas = new ArrayList<>();
     }
 
-    // Método Construtor com todos os dados da Playlist
-    public Playlist(int id, String titulo, String descricao) {
+    // Método Construtor com todos os dados (recuperação bd -> objeto)
+    public Playlist(int id, String titulo, String descricao, boolean compartilhar, LocalDate criacao, int totalMusicas) {
         this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
-
+        this.compartilhar = compartilhar;
+        this.criacao = criacao;
+        this.totalMusicas = totalMusicas;
+        
         this.musicas = new ArrayList<>();
-        this.criacao = new Date();
-        this.totalMusicas = 0;
-        this.compartilhar = false;
     }
     
     // Métodos Getter e Setter padrão (id, titulo, descricao, compartilhar criacao, totmusica, list)
@@ -49,13 +53,15 @@ public class Playlist {
     public boolean isCompartilhar() {return this.compartilhar;}
 	public void setCompartilhar(boolean compartilhar) {this.compartilhar = compartilhar;}
 	
-	public Date getCriacao() {return this.criacao;}
-	public void setCriacao(Date criacao) {this.criacao = criacao;}
+	public LocalDate getCriacao() {return this.criacao;}
+	public void setCriacao(LocalDate criacao) {this.criacao = criacao;}
 	
 	public int getTotalMusicas() {return this.totalMusicas;}
 	public void setTotalMusicas(int totalMusicas) {this.totalMusicas = totalMusicas;}
 	
-	public List<Musica> getMusicas() {return this.musicas;}
+	public List<Musica> getMusicas() {
+		return this.musicas;
+	}
     
     // Método para recuperar os dados da Playlist
     public String obterDados() {

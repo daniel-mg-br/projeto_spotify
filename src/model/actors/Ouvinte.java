@@ -35,11 +35,23 @@ public class Ouvinte extends Usuario {
 		return this.podcastsFavoritos;
 	}
 	
-	// Método Construtor
-	public Ouvinte(Conta conta, int id, String nome, String sexo, LocalDate aniversario) {
-		super(conta, id, nome, sexo, aniversario);
+	// Método Construtor padrão
+	public Ouvinte(Conta conta, String nome, String sexo, LocalDate aniversario) {
+		super(conta, nome, sexo, aniversario);
 		this.totalMinutos = 0;
 		this.generoFavorito = "";
+		
+		this.playlists = new ArrayList<>();
+		this.albunsFavoritos = new ArrayList<>();
+		this.podcastsFavoritos = new ArrayList<>();
+	}
+	
+	// Método Construtor com todos os dados (recuperação bd -> objeto)
+	public Ouvinte(Conta conta, int id, String nome, String sexo, LocalDate aniversario, int totalMinutos, String generoFavorito) {
+		super(conta, id, nome, sexo, aniversario);
+		
+		this.totalMinutos = totalMinutos;
+		this.generoFavorito = generoFavorito;
 		
 		this.playlists = new ArrayList<>();
 		this.albunsFavoritos = new ArrayList<>();
@@ -65,7 +77,7 @@ public class Ouvinte extends Usuario {
 	
 	// Método para o usuário criar uma playlist nova
 	public Playlist criarPlaylist(int id, String nome, String descricao) {
-		Playlist nova =new Playlist(id, nome, descricao);
+		Playlist nova = new Playlist(nome, descricao);
 		this.adicionarPlaylist(nova);
 		return nova;
 	}

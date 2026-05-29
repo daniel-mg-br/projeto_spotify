@@ -11,21 +11,24 @@ public class Musica extends Conteudo {
     // Lista com os membros da equipe por trás da música
     private List<String> equipe;
     
+ // Método Construtor com os dados apenas do Conteúdo
+    public Musica(String titulo, int duracaoMin) {
+    	super(titulo, duracaoMin);
+   
+    	this.genero = "";
+    	this.letra = "";
+    	
+        equipe = new ArrayList<>();
+    }
+    
     // Método Construtor com todos os dados da música
     public Musica(int id, String titulo, int duracaoMin, String genero, String letra) {
         super(id, titulo, duracaoMin);
 
         this.genero = genero;
         this.letra = letra;
+        
         this.equipe = new ArrayList<>();
-    }
-    
-    // Método Construtor com os dados apenas do Conteúdo
-    public Musica(int id, String titulo, int duracaoMin) {
-    	super(id, titulo, duracaoMin);
-    	this.genero = "";
-    	this.letra = "";
-        equipe = new ArrayList<>();
     }
     
     // Métodos Getter e Setter padrão

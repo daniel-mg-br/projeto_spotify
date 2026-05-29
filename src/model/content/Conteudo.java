@@ -7,7 +7,14 @@ public abstract class Conteudo {
     private String titulo;
     private int duracaoMin;
     
-    // Método Construtor
+    // Método Construtor padrão
+    public Conteudo(String titulo, int duracaoMin) {
+    	this.id = 0;
+    	this.titulo = titulo;
+    	this.duracaoMin = duracaoMin;
+    }
+    
+    // Método Construtor com todos os dados (recuperação bd -> objeto)
     public Conteudo(int id, String titulo, int duracaoMin) {
         this.id = id;
         this.titulo = titulo;

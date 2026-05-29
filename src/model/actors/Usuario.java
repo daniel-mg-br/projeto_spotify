@@ -28,13 +28,22 @@ public abstract class Usuario {
     public LocalDate getAniversario() {return this.aniversario;}
     public void setAniversario(LocalDate aniversario) {this.aniversario = aniversario;}
     
-    // Método Construtor
-    public Usuario(Conta conta, int id, String nome, String sexo, LocalDate aniversario) {
+    // Método Construtor padrão
+    public Usuario(Conta conta, String nome, String sexo, LocalDate aniversario) {
         this.conta = conta;
-        this.id = id;
+        this.id = 0;
         this.nome = nome;
         this.sexo = sexo;
         this.aniversario = aniversario;
+    }
+    
+    // Método Construtor com todos os dados (recuperação bd -> objeto)
+    public Usuario(Conta conta, int id, String nome, String sexo, LocalDate aniversario) {
+    	this.conta = conta;
+    	this.id = id;
+    	this.nome = nome;
+    	this.sexo = sexo;
+    	this.aniversario = aniversario;
     }
     
     // Método para alterar o nome do usuário, com verificação

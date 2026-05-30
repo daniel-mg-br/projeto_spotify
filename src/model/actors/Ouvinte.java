@@ -58,11 +58,6 @@ public class Ouvinte extends Usuario {
 		this.podcastsFavoritos = new ArrayList<>();
 	}
 	
-	// Método para calcular o gênero favorito do usuário (em breve)
-	public String obterGeneroFavorito() {
-		return "";
-	}
-	
 	// Método para verificar se o Ouvinte tem o plano premium
 	public boolean isPremium() {
 		return this.getConta().getPlano().equalsIgnoreCase("premium");

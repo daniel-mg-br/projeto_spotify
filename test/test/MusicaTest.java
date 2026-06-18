@@ -1,0 +1,55 @@
+package test;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import model.content.Musica;
+
+public class MusicaTest {
+	//Testa se esta criando musica corretamente
+	@Test
+	void deveCriarMusicaCorretamente() {
+		
+		Musica nova = new Musica(800, "Sinonimos", 4, "Sertanejo", "Quanto tempo o coracao...");
+		
+		assertEquals(800, nova.getId());
+		assertEquals("Sinonimos", nova.getTitulo());
+		assertEquals(4, nova.getDuracaoMin());
+		assertEquals("Sertanejo", nova.getGenero());
+		assertEquals("Quanto tempo o coracao...", nova.getLetra());
+	}
+	//Testa se esta adicionando um membro a equipe corretamente
+	@Test
+	void deveAdicionarMembroNaEquipe() {
+		
+		Musica nova = new Musica("Sinonimos", 4);
+		
+		assertTrue(nova.adicionarMembroEquipe("Chitaozinho"));	
+		
+	}
+	//Testa se o metodo impede que se adicione um membro null ou repitido
+	@Test
+	void naoDeveAdicionarMebroInvalido() {
+		
+		Musica nova = new Musica("Sinonimos", 4);
+		
+		nova.adicionarMembroEquipe("Chitaozinho");
+		
+		assertFalse(nova.adicionarMembroEquipe("Chitaozinho"));	
+		
+		assertFalse(nova.adicionarMembroEquipe(null));
+			
+	}
+	//Deve remover um membro corretamente
+	@Test
+	void deveRemoverMembro() {
+		
+		Musica nova = new Musica("Sinonimos", 4);
+		
+		nova.adicionarMembroEquipe("Chitaozinho");
+		
+		assertTrue(nova.removerMembroEquipe("Chitaozinho"));
+	}
+
+}

@@ -12,7 +12,7 @@ import model.actors.Criador;
 
 public class UsuarioTest {
 
-	//Deve testar se o usuario é criado corretamente
+	//Deve testar se o método está criando usuário corretamente
 	@Test
 	void deveCriarUsuarioCorretamente() {
 		

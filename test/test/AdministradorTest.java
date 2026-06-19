@@ -16,7 +16,7 @@ import model.content.Episodio;
 
 public class AdministradorTest {
 	
-	//Testa se a consulta ao usuario é efetuada com sucesso
+	//Testa se a consulta ao usuário é efetuada com sucesso
 	@Test
 	void deveConsultarUsuario() {
 		
@@ -28,7 +28,7 @@ public class AdministradorTest {
 		
 		assertSame(usuario, administrador.consultarUsuario(usuario));
 	}
-	//Testa se a consulta ao conteudo é efetuada com sucesso
+	//Testa se a consulta ao conteúdo é efetuada com sucesso
 	@Test
 	void deveConsultarConteudo() {
 		

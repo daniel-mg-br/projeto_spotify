@@ -11,7 +11,7 @@ import model.content.Podcast;
 import model.content.Episodio;
 
 public class PodcastTest {
-	
+	//Testa se o método está criando um podcast corretamente e com os dados corretos
 	@Test
 	void deveCriarPodcastCorretamente() {
 		
@@ -25,9 +25,9 @@ public class PodcastTest {
 		assertEquals(data, novo.getCriacao());
 		assertEquals(13, novo.getNumEpisodios());
 	}
-	
+	//Testa se o método está adicionando um episódio corretamente
 	@Test
-	void deveAdicionarEpsodioCorretamente() {
+	void deveAdicionarEpisodioCorretamente() {
 		
 		LocalDate data = LocalDate.of(2026, 06, 18);
 		
@@ -38,9 +38,9 @@ public class PodcastTest {
 		assertTrue(novo.adicionarEp(nov));
 		
 	}
-	
+	//Testa se o método impede que se adicione um episódio null, ou repetido
 	@Test
-	void naoDeveAdicionarEpsodioInvalido() {
+	void naoDeveAdicionarEpisodioInvalido() {
 		
 		LocalDate data = LocalDate.of(2026, 06, 18);
 		
@@ -54,9 +54,9 @@ public class PodcastTest {
 		assertFalse(novo.adicionarEp(null));
 		
 	}
-	
+	//Testa se o método remove um episódio corretamente
 	@Test
-	void deveRemoverEpsodioCorretamente() {
+	void deveRemoverEpisodioCorretamente() {
 				
 		LocalDate data = LocalDate.of(2026, 06, 18);
 		

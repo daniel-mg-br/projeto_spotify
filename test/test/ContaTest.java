@@ -20,7 +20,7 @@ public class ContaTest {
         assertEquals("Ativa", conta.getStatus());
         assertNotNull(conta.getDataCriacao());
     }
-    //Esse teste verifica se o metodo funciona corretamente para uma senha valida
+    //Esse teste verifica se o método funciona corretamente para uma senha válida
     @Test
     void deveValidarSenhaCorretamente() {
 
@@ -28,7 +28,7 @@ public class ContaTest {
 
         assertTrue(conta.validarSenha("123"));
     }
-    // Esse teste verifica se o metodo funciona corretamente para uma senha invalida
+    // Esse teste verifica se o método funciona corretamente para uma senha inválida
     @Test
     void naoDeveValidarSenhaIncorreta() {
 
@@ -36,7 +36,7 @@ public class ContaTest {
 
         assertFalse(conta.validarSenha("456"));
     }
-    /* Esse teste faz duas coisas Primeiro confirmamos que alterarSenha() retorna true,
+    /* Esse teste faz duas coisas: Primeiro confirmamos que alterarSenha() retorna true,
     indicando sucesso, e depois verificamos que o atributo senha foi atualizado para 
     o novo valor." */
     @Test

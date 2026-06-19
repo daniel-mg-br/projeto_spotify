@@ -12,7 +12,7 @@ import model.content.Musica;
 
 
 public class PlaylistTest {
-	
+	//Testa se o método está criando playlist corretamente e com os dados corretos
 	@Test
 	void deveCriarPlaylistCorretamente() {
 		
@@ -25,7 +25,7 @@ public class PlaylistTest {
 		assertEquals(LocalDate.of(2026, 07, 23), nova.getCriacao());
 		assertEquals(12, nova.getTotalMusicas());
 	}
-	
+	//Testa se o método está adicionando musica corretamente
 	@Test
 	void deveAdicionarMusicaCorretamente() {
 		
@@ -36,7 +36,7 @@ public class PlaylistTest {
 		assertTrue(nov.adicionarMusica(nova));
 		
 	}
-	
+	//Testa se o método impede que se adicione a mesma música duas vezes, ou uma música null
 	@Test
 	void naoDeveAdicionarMusicaInvalida() {
 		
@@ -49,7 +49,7 @@ public class PlaylistTest {
 		assertFalse(nov.adicionarMusica(nova));
 		assertFalse(nov.adicionarMusica(null));		
 	}
-	
+	//Testa se o método remove uma música corretamente
 	@Test
 	void deveRemoverMusicaCorretamente() {
 		

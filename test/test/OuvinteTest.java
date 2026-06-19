@@ -40,7 +40,7 @@ public class OuvinteTest {
 		assertTrue(ouvinte.adicionarPlaylist(nova));
 		
 	}
-	//Testa se a playlist é removida corretamente
+	//Testa se o método remove uma playlist corretamente
 	@Test
 	void deveRemoverPlaylist() {
 		

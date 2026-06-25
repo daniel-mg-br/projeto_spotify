@@ -22,7 +22,7 @@ public class CriadorTest {
 		
 		Criador criador = new Criador(conta, "Gean", "M", LocalDate.of(2000, 01, 01));
 		
-		Album album = new Album("EVOM", "Trap");
+		Album album = new Album("EVOM", "Trap", criador.getId());
 		
 		assertTrue(criador.adicionarAlbum(album));
 	}
@@ -34,7 +34,7 @@ public class CriadorTest {
 		
 		Criador criador = new Criador(conta, "Gean", "M", LocalDate.of(2000, 01, 01));
 		
-		Album album = new Album("EVOM", "Trap");
+		Album album = new Album("EVOM", "Trap", criador.getId());
     	
 		criador.adicionarAlbum(album);
     	
@@ -48,7 +48,7 @@ public class CriadorTest {
 		
 		Criador criador = new Criador(conta, "Gean", "M", LocalDate.of(2000, 01, 01));
 		
-		Podcast podcast = new Podcast("Evoluir", "Desenvolvimento");
+		Podcast podcast = new Podcast("Evoluir", "Desenvolvimento", criador.getId());
 		
 		assertTrue(criador.adicionarPodcast(podcast));
     	
@@ -61,7 +61,7 @@ public class CriadorTest {
 		
 		Criador criador = new Criador(conta, "Gean", "M", LocalDate.of(2000, 01, 01));
 		
-		Podcast podcast = new Podcast("Evoluir", "Desenvolvimento");
+		Podcast podcast = new Podcast("Evoluir", "Desenvolvimento", criador.getId());
 		
 		criador.adicionarPodcast(podcast);
 		

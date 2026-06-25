@@ -35,7 +35,7 @@ public class OuvinteTest {
 		
 		Ouvinte ouvinte = new Ouvinte(conta, "Gean", "M", LocalDate.of(2000, 01, 01));
 		
-		Playlist nova = new Playlist("Estudo", "Playlist para estudar");
+		Playlist nova = new Playlist("Estudo", "Playlist para estudar", ouvinte.getId());
 		
 		assertTrue(ouvinte.adicionarPlaylist(nova));
 		
@@ -48,7 +48,7 @@ public class OuvinteTest {
 		
 		Ouvinte ouvinte = new Ouvinte(conta, "Gean", "M", LocalDate.of(2000, 01, 01));
 		
-		Playlist nova = new Playlist("Estudo", "Playlist para estudar");
+		Playlist nova = new Playlist("Estudo", "Playlist para estudar", ouvinte.getId());
 		
 		ouvinte.adicionarPlaylist(nova);
 		

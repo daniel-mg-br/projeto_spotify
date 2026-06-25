@@ -7,7 +7,9 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
 import model.content.Podcast;
-
+import model.actors.Conta;
+import model.actors.Ouvinte;
+import model.actors.Criador;
 import model.content.Episodio;
 
 public class PodcastTest {
@@ -17,13 +19,16 @@ public class PodcastTest {
 		
 		LocalDate data = LocalDate.of(2026, 06, 18);
 		
-		Podcast novo = new Podcast(344, "Saude", "Podcast sobre saude", data, 13);
+		Conta conta = new Conta("gean", "123");
+		
+		Criador criador = new Criador(conta, "Gean", "M", LocalDate.of(2000, 12, 23));
+		
+		Podcast novo = new Podcast(344, "Saude", "Podcast sobre saude", criador.getId() ,data);
 		
 		assertEquals(344, novo.getId());
 		assertEquals("Saude", novo.getNome());
 		assertEquals("Podcast sobre saude", novo.getTema());
 		assertEquals(data, novo.getCriacao());
-		assertEquals(13, novo.getNumEpisodios());
 	}
 	//Testa se o método está adicionando um episódio corretamente
 	@Test
@@ -31,7 +36,11 @@ public class PodcastTest {
 		
 		LocalDate data = LocalDate.of(2026, 06, 18);
 		
-		Podcast novo = new Podcast(344, "Saude", "Podcast sobre saude", data, 13);
+		Conta conta = new Conta("gean", "123");
+		
+		Criador criador = new Criador(conta, "Gean", "M", LocalDate.of(2000, 12, 23));
+		
+		Podcast novo = new Podcast(344, "Saude", "Podcast sobre saude", criador.getId(), data);
 		
 		Episodio nov = new Episodio("Alimentacao", 15);
 		
@@ -44,7 +53,11 @@ public class PodcastTest {
 		
 		LocalDate data = LocalDate.of(2026, 06, 18);
 		
-		Podcast novo = new Podcast(344, "Saude", "Podcast sobre saude", data, 13);
+		Conta conta = new Conta("gean", "123");
+		
+		Criador criador = new Criador(conta, "Gean", "M", LocalDate.of(2000, 12, 23));
+		
+		Podcast novo = new Podcast(344, "Saude", "Podcast sobre saude", criador.getId(), data);
 		
 		Episodio nov = new Episodio("Alimentacao", 15);
 		
@@ -60,7 +73,11 @@ public class PodcastTest {
 				
 		LocalDate data = LocalDate.of(2026, 06, 18);
 		
-		Podcast novo = new Podcast(344, "Saude", "Podcast sobre saude", data, 13);
+		Conta conta = new Conta("gean", "123");
+		
+		Criador criador = new Criador(conta, "Gean", "M", LocalDate.of(2000, 12, 23));
+		
+		Podcast novo = new Podcast(344, "Saude", "Podcast sobre saude", criador.getId(), data);
 		
 		Episodio nov = new Episodio("Alimentacao", 15);
 		

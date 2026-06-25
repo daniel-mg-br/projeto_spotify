@@ -47,11 +47,11 @@ public class ControllerCriador {
      * @param criadorId ID do Criador de conteúdo;
      * @return Retorna true se a operação for bem sucedida, e false se não.	
      */
-    public boolean criarAlbum(String titulo, String tipo, int criadorId) {
+    public boolean criarAlbum(String titulo, String tipo) {
     	Criador criador = this.getCriadorLogado();
     	if (criador == null) return false;
     	
-    	Album novoAlbum = new Album(titulo, tipo, criadorId);
+    	Album novoAlbum = new Album(titulo, tipo, criador.getId());
     	this.albumDAO.salvar(novoAlbum);
     	
     	criador.adicionarAlbum(novoAlbum);
@@ -168,11 +168,11 @@ public class ControllerCriador {
      * @param criadorId ID do criador de conteúdo responsável;
      * @return Retorna true se a operação for bem sucedida, e false se não.
      */
-    public boolean criarPodcast(String nome, String tema, int criadorId	) {
+    public boolean criarPodcast(String nome, String tema) {
     	Criador criador = this.getCriadorLogado();
     	if (criador == null) return false;
     	
-    	Podcast novoPodcast = new Podcast(nome, tema, criadorId);
+    	Podcast novoPodcast = new Podcast(nome, tema, criador.getId());
     	this.podcastDAO.salvar(novoPodcast);
     	
     	criador.adicionarPodcast(novoPodcast);

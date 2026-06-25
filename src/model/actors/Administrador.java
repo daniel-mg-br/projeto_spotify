@@ -1,50 +1,54 @@
 package model.actors;
-
-import model.content.*;
+ 
 import java.time.LocalDate;
 
-// Classe Administrador, filha de Usuario, representa um moderador do sistema operando sobre os dados
+/**
+ * Classe Administrador, filha de Usuario, representa um moderador do sistema operando sobre os dados.
+ */
 public class Administrador extends Usuario {
-	// Atributo privado
+	
+	// Atributo privado específico do administrador.
     private String credencial;
     
-    // Métodos Getter e Setter padrão
+    // Métodos Getter e Setter padrão.
     public String getCredencial() {return this.credencial;}
     public void setCredencial(String credencial) {this.credencial = credencial;}
     
-    // Método Construtor padrão
+    /**
+     * Método Construtor padrão para instanciação.
+     * Usa os atributos de Usuario (superclasse).
+     * 
+     * @param conta Conta associada ao usuário;
+     * @param nome Nome do usuário;
+     * @param sexo Sexo do usuário;
+     * @param aniversario Data de aniversário do usuário;
+     * @param credencial Credencial do administrador.
+     */
     public Administrador(Conta conta, String nome, String sexo, LocalDate aniversario, String credencial) {
     	super(conta, nome, sexo, aniversario);
         this.credencial = credencial;
     }
     
-    // Método Construtor com todos os dados (recuperação bd -> objeto)
+    /**
+     * Método Construtor com todos os dados (recuperação bd -> objeto).
+     * 
+     * @param conta Conta associada ao usuário recuperado;
+     * @param id ID do usuário recuperado;
+     * @param nome Nome do usuário recuperado;
+     * @param sexo Sexo do usuário recuperado;
+     * @param aniversario Data de aniversário recuperada;
+     * @param credencial Credencial do administrador recuperado.
+     */
     public Administrador(Conta conta, int id, String nome, String sexo, LocalDate aniversario, String credencial) {
     	super(conta, id, nome, sexo, aniversario);
     	this.credencial = credencial;
     }
     
-    // Método temporário / incompleto: operação de suspenão de usuários
-    public void suspenderUsuario(Usuario usuario) {
-        System.out.println("Usuário suspenso: " + usuario.obterDados());
-    }
-    
-    // Método temporário / incompleto: operação de remoção de conteúdos
-    public void removerConteudo(Conteudo conteudo) {
-    	System.out.println("Conteúdo removido: " + conteudo.obterDados());
-    }
-    
-    // Método temporário / incompleto: operação de consulta de usuários
-    public Usuario consultarUsuario(Usuario usuario) {
-        return usuario;
-    }
-    
-    // Método temporário / incompleto: operação de consulta de conteúdo
-    public Conteudo consultarConteudo(Conteudo conteudo) {
-        return conteudo;
-    }
-    
-    // Método para recuperar os dados do Administrador
+    /**
+     * Método para recuperar os dados do Administrador.
+     * 
+     * @return Retorna os dados em formato de string.
+     */
     @Override
     public String obterDados() {
     	String superDados = super.obterDados();

@@ -3,48 +3,68 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 
-// Classe Album, que representa os álbuns do Criador e que o Ouvinte ouve
+/**
+ * Classe Album, que representa os álbuns do Criador e que o Ouvinte ouve.
+ */
 public class Album {
 	
-	// Atributos privados
+	// Atributos privados de Album.
     private int id;
+    private int criadorId;
     private String titulo;
     private String tipo;
     private boolean status;
     private LocalDate lancamento;
-    private int numeroFaixas;
     
-    // Lista de faixa(s) que compõem um álbum
+    // Lista de faixa(s) que compõem um álbum.
     private List<Musica> musicas;
     
-    // Método Construtor padrão
-    public Album(String titulo, String tipo) {
+    /**
+     * Método Construtor padrão para instanciação.
+     * 
+     * @param titulo Título do álbum;
+     * @param tipo Tipo do álbum (Single, Coletânea, etc);
+     * @param criadorId ID do criador que possui o álbum.
+     */
+    public Album(String titulo, String tipo, int criadorId) {
     	this.id = 0;
+    	this.criadorId = criadorId;
     	this.titulo = titulo;
     	this.tipo = tipo;
     	this.lancamento = LocalDate.now();
-        this.numeroFaixas = 0;
         this.status = false;
         
         this.musicas = new ArrayList<>();
     }
     
-    // Método Construtor com todos os dados (recuperação bd -> objeto)
-    public Album(int id, String titulo, String tipo, boolean status, LocalDate lancamento, int numeroFaixas) {
+    /**
+     * Método Construtor com todos os dados (recuperação bd -> objeto).
+     * 
+     * @param id ID do álbum recuperado;
+     * @param titulo Título do álbum recuperado;
+     * @param tipo Tipo do álbum recuperado;
+     * @param criadorId ID do criador que possui esse álbum;
+     * @param status Status do álbum (rascunho = false, lançado = true);
+     * @param lancamento Data de lançamento do álbum recuperado;
+     */
+    public Album(int id, String titulo, String tipo, int criadorId, boolean status, LocalDate lancamento) {
         this.id = id;
+        this.criadorId = criadorId;
         this.titulo = titulo;
         this.tipo = tipo;
-        this.numeroFaixas = numeroFaixas;
         this.status = status;
         this.lancamento = lancamento;
         
         this.musicas = new ArrayList<>();
     }
     
-    // Métodos Getter e Setter Padrão
+    // Métodos Getter e Setter Padrão.
     public int getId() {return this.id;}
     public void setId(int id) {this.id = id;}
 
+    public int getCriadorId() {return this.criadorId;}
+    public void setCriadorId(int criadorId) {this.criadorId = criadorId;}
+    
     public String getTitulo() {return this.titulo;}
     public void setTitulo(String titulo) {this.titulo = titulo;}
 
@@ -57,64 +77,73 @@ public class Album {
     public LocalDate getLancamento() {return this.lancamento;}
     public void setLancamento(LocalDate lancamento) {this.lancamento = lancamento;}
     
-    public int getNumeroFaixas() {return this.numeroFaixas;}
-    public void setNumeroFaixas(int numeroFaixas) {this.numeroFaixas = numeroFaixas;}
+    public int getNumeroFaixas() {
+    	return this.musicas.size();
+    }
 
     public List<Musica> getMusicas() {
         return musicas;
     }
     
-    // Método para recuperar os dados do album
-    public String obterDados() {
-        return "ID: " + this.getId() +
-               "\nTítulo: " + this.getTitulo() +
-               "\nTipo: " + getTipo() +
-               "\nStatus: " + this.isStatus() +
-               "\nLançamento: " + this.getLancamento() +
-               "\nNúmero de Faixas: " + this.getNumeroFaixas();
-    }
-    
-    // Método para mostrar o título das músicas no álbum
+    /**
+     * Método para mostrar o título das músicas do álbum.
+     */
     public void mostrarFaixas() {
         for (Musica m : musicas) {
             System.out.println(m.getTitulo());
         }
     }
     
-    // Método para adicionar músicas ao álbum
+    /**
+     * Método para adicionar músicas ao álbum.
+     * 
+     * @param m Objeto de Musica com os dados a serem adicionados;
+     * @return Retorna true se a operação é bem sucedida, e false se não.
+     */
     public boolean adicionarFaixa(Musica m) {
-        boolean adicionou = true;
-
-        if (this.musicas.contains(m) || m == null) {
-        	adicionou = false;
-            
-        }
+    	if (m == null) return false;
+    	
+    	// .stream() transforma a lista em uma sequência de elementos;
+    	// .anyMatch() compara se a música existe nessa sequência.
+        boolean jaExiste = this.musicas.stream().anyMatch(musica -> musica.getId() == m.getId());
+        if (jaExiste) return false;
         
-        if (adicionou) {
-        	this.musicas.add(m);
-            numeroFaixas++;
-        }
-        
-        return adicionou;
+        return this.musicas.add(m);
     }
     
-    // Método para remover músicas do álbum
+    /**
+     * Método para remover músicas do álbum.
+     * 
+     * @param m Objeto de Musica a ser removida do álbum;
+     * @return Retorna true se a operação for bem sucedida e false se não.
+     */
     public boolean removerFaixa(Musica m) {
-
-        boolean removeu = musicas.remove(m);
-
-        if (removeu) {
-            this.numeroFaixas--;
-        }
-
-        return removeu;
+    	// .removeIf() remove o(s) elemento(s) que cumpre(m) a condição entre parênteses.
+    	return this.musicas.removeIf(musica -> musica.getId() == m.getId());
     }
     
-    // Método para alterar o status de lançamento do álbum
+    /**
+     * Método para alterar o status de lançamento do álbum (false -> true).
+     */
     public void lancarAlbum() {
         this.status = true;
         this.lancamento = LocalDate.now();
 
         System.out.println("Álbum lançado com sucesso!");
+    }
+    
+    /**
+     * Método para recuperar os dados do álbum.
+     * 
+     * @return Retorna os dados em formato de string.
+     */
+    public String obterDados() {
+        return "ID: " + this.getId() +
+        	   "\nID do criador: " + this.getCriadorId() +
+               "\nTítulo: " + this.getTitulo() +
+               "\nTipo: " + getTipo() +
+               "\nStatus: " + this.isStatus() +
+               "\nLançamento: " + this.getLancamento() +
+               "\nNúmero de Faixas: " + this.getNumeroFaixas();
     }
 }

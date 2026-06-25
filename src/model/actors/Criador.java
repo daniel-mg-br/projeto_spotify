@@ -5,18 +5,21 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 
-// Classe Criador, filha de Usuário, que representa um criador de conteúdo da plataforma de streaming
+/**
+ * Classe Criador, filha de Usuário, que representa um criador de conteúdo da plataforma de streaming.
+ */
 public class Criador extends Usuario {
-	// Atributos privados
+	
+	// Atributos privados específicos do criador.
 	private String nomeArtistico, biografia;
 	private int ouvintesMensais;
 	private boolean verificado;
 	
-	// Listas para representar os álbuns e podcasts do criador de conteúdo
+	// Listas para representar os álbuns e podcasts do criador de conteúdo.
 	private List <Album> discografia;
 	private List <Podcast> podcasts;
 	
-	// Métodos Getter e Setter padrão
+	// Métodos Getter e Setter padrão.
 	public String getNomeArtistico() {return this.nomeArtistico;}
 	public void setNomeArtistico(String nomeArtistico) {this.nomeArtistico = nomeArtistico;}
 	
@@ -37,7 +40,15 @@ public class Criador extends Usuario {
 		return this.podcasts;
 	}
 	
-	// Método Construtor com apenas os dados de Usuário
+	/**
+	 * Método Construtor padrão para instanciação.
+	 * Usa os dados de Usuario (superclasse).
+	 * 
+	 * @param conta Conta associada ao usuário;
+	 * @param nome Nome do usuário;
+	 * @param sexo Sexo do usuário;
+	 * @param aniversario Data de aniversário do usuário.
+	 */
 	public Criador(Conta conta, String nome, String sexo, LocalDate aniversario) {
 		super(conta, nome, sexo, aniversario);
 		this.nomeArtistico = "";
@@ -49,7 +60,19 @@ public class Criador extends Usuario {
 		this.podcasts = new ArrayList<>();
 	}
 	
-	// Método Construtor com todos os dados do Criador
+	/**
+	 * Método Construtor com todos os dados do Criador (recuperação bd -> objeto).
+	 * 
+	 * @param conta Conta associada ao usuário recuperado;
+	 * @param id ID do usuário recuperado;
+	 * @param nome Nome do usuário recuperado;
+	 * @param sexo Sexo do usuário recuperado;
+	 * @param aniversario Data de aniversário do usuário;
+	 * @param nomeArtistico Nome artístico do criador;
+	 * @param biografia Biografia do criador recuperado;
+	 * @param ouvintesMensais Ouvintes mensais do Criador (contador de engajamento);
+	 * @param verificado Se o criador é verificado (true) ou não (false).
+	 */
 	public Criador(Conta conta, int id, String nome, String sexo, LocalDate aniversario, String nomeArtistico, String biografia, int ouvintesMensais, boolean verificado) {
 		super(conta, id, nome, sexo, aniversario);
 		this.nomeArtistico = nomeArtistico;
@@ -61,65 +84,86 @@ public class Criador extends Usuario {
 		this.podcasts = new ArrayList<>(); 
 	}
 	
-	// Método para o Criador criar um álbum novo
-	public Album criarAlbum(int id, String titulo, String tipo) {		
-		Album novo = new Album(titulo, tipo);
-		this.adicionarAlbum(novo);
-		return novo; 
-	}
-	
-	// Método para adicionar um novo álbum à discografia
+	/**
+	 * Método para adicionar um novo álbum à discografia, com verificação de dados.
+	 * 
+	 * @param a Objeto do álbum com seus dados;
+	 * @return Retorna true se a operação foi bem sucedida e false se não.
+	 */
 	public boolean adicionarAlbum(Album a) {
-		if (this.discografia.contains(a) || a == null) {
-			return false;
-		}
+		boolean jaExiste = this.discografia.stream().anyMatch(album -> album.getId() == a.getId());
+		
+		if (jaExiste || a == null) return false;
 		
 		this.discografia.add(a);
 		return true;
 	}
 	
-	// Método para remover um álbum da discografia
+	/**
+	 * Método para remover um álbum da discografia.
+	 * 
+	 * @param a Objeto de Album a ser removido;
+	 * @return Retorna true se a operação foi bem sucedida e false se não.
+	 */
 	public boolean removerAlbum(Album a) {
-		return this.discografia.remove(a);
+		return this.discografia.removeIf(album -> album.getId() == a.getId());
 	}
 	
-	// Método para mostrar a discografia completa do Criador, com verificação
+	/**
+	 * Método para mostrar a discografia completa do Criador.
+	 */
 	public void mostrarAlbuns() {
 		for (Album a : this.getDiscografia()) {
 			System.out.println(a.getTitulo());
 		}
 	}
 	
-	// Método para mostrar os podcasts do Criador
+	/**
+	 * Método para mostrar os podcasts do Criador.
+	 */
 	public void mostrarPodcasts() {
 		for (Podcast p : this.getPodcasts()) {
 			System.out.println(p.getNome());
 		}
 	}
-	
-	// Método para o Criador criar um podcast novo
-	public Podcast criarPodcast(int id, String nome, String tema) {
-		Podcast novo = new Podcast(nome, tema);
-		this.adicionarPodcast(novo);
-		return novo; 
-	}
-	
-	// Método para adicionar um podcast à lista do Criador, com verificação
+
+	/**
+	 * Método para adicionar um podcast à lista do Criador, com verificação de dados.
+	 * 
+	 * @param p Objeto de podcast com seus dados;
+	 * @return Retorna true se a operação foi bem sucedida e false se não.
+	 */
 	public boolean adicionarPodcast(Podcast p) {
-		if (this.podcasts.contains(p) || p == null) {
-			return false;
-		}
+		boolean jaExiste = this.podcasts.stream().anyMatch(podcast -> podcast.getId() == p.getId());
+		
+		if (jaExiste || p == null) return false;
 		
 		this.podcasts.add(p);
 		return true;
 	}
 	
-	// Método para remover um podcast da lista
+	/**
+	 * Método para remover um podcast da lista.
+	 * 
+	 * @param p Objeto de Podcast a ser removido;
+	 * @return Retorna true se a operação foi bem sucedida e false se não.
+	 */
 	public boolean removerPodcast(Podcast p) {
-		return this.podcasts.remove(p);
+		return this.podcasts.removeIf(podcast -> podcast.getId() == p.getId());
 	}
 	
-	// Método para recuperar os dados do Criador
+	/**
+	 * Método auxiliar para incrementar os ouvintes mensais toda vez que um conteúdo é "consumido".
+	 */
+	public void adicionarEngajamento() {
+		this.ouvintesMensais++;
+	}
+	
+	/**
+	 * Método para recuperar os dados do Criador.
+	 * 
+	 * @return Retorna os dados em formato de string.
+	 */
 	@Override 
 	public String obterDados() {
 		String superDados = super.obterDados();

@@ -1,34 +1,36 @@
 package controller;
 
-import database.*;
+import dao.*;  
 import model.actors.*;
 import model.content.*;
 
-// Classe Controller para as responsabilidades do Administrador
+/**
+ * Classe Controller para as responsabilidades do Administrador.
+ */
 public class ControllerAdmin {
-	// Objetos DAO para manipulação de dados
+	// Objetos DAO como atributos para manipulação de dados.
 	private ContaDAO contaDAO;
 	private OuvinteDAO ouvinteDAO;
 	private CriadorDAO criadorDAO;
 	private MusicaDAO musicaDAO;
 	private EpisodioDAO episodioDAO;
-	private AlbumDAO albumDAO;
-	private PlaylistDAO playlistDAO;
-	private PodcastDAO podcastDAO;
 	
-	// Método Construtor
+	/**
+	 * Método Construtor do Controller.
+	 */
 	public ControllerAdmin() {
 		this.contaDAO = new ContaDAO();
 		this.ouvinteDAO = new OuvinteDAO();
 		this.criadorDAO = new CriadorDAO();
 		this.musicaDAO = new MusicaDAO();
 		this.episodioDAO = new EpisodioDAO();
-		this.albumDAO = new AlbumDAO();
-		this.playlistDAO = new PlaylistDAO();
-		this.podcastDAO = new PodcastDAO();
 	}
 	
-	// Método para recuperar o Administrador logado
+	/**
+	 * Método auxiliar para recuperar o Administrador logado.
+	 * 
+	 * @return Retorna o objeto de Administrador com seus dados, ou null se a operação falhar.
+	 */
 	private Administrador getAdminLogado() {
 		Usuario usuario = ControllerAutenticador.getUsuarioLogado();
 		
@@ -39,7 +41,12 @@ public class ControllerAdmin {
 		return null;
 	}
 	
-	// Método para suspender usuário, com verificações de acesso e de tipo de usuário
+	/**
+	 * Método para suspender usuário, com verificações de acesso e de tipo de usuário.
+	 * 
+	 * @param idUsuario ID do usuário a ser suspenso.
+	 * @return Retorna true se a operação for bem sucedida, ou false se não.
+	 */
 	public boolean suspenderUsuario(int idUsuario) {
 		Administrador admin = this.getAdminLogado();
 		
@@ -71,8 +78,13 @@ public class ControllerAdmin {
 		return atualizou;
 	}
 	
-	// Método para remover conteúdo, sejam músicas ou episódios de podcast
-	// As playlists / álbuns / podcasts também são atualizados
+	/**
+	 *  Método para remover conteúdos registrados, sejam músicas ou episódios de podcast. 
+	 *  As playlists / álbuns / podcasts também são atualizados, devido ao ON DELETE CASCADE.
+	 *  
+	 * @param idConteudo ID do conteúdo a ser removido.
+	 * @return Retorna true se a operação for bem sucedida e false se não.
+	 */
 	public boolean removerConteudo(int idConteudo) {
 		Administrador admin = this.getAdminLogado();
 		
@@ -84,20 +96,6 @@ public class ControllerAdmin {
 		Musica musicaRemover = this.musicaDAO.buscarId(idConteudo);
 		
 		if (musicaRemover != null) {
-			for (Album album : this.albumDAO.listarAlbuns()) {
-				if (album.getMusicas().contains(musicaRemover)) {
-					album.removerFaixa(musicaRemover);
-					this.albumDAO.atualizar(album);
-				}
-			}
-			
-			for (Playlist playlist : this.playlistDAO.listarPlaylists()) {
-				if (playlist.getMusicas().contains(musicaRemover)) {
-					playlist.removerMusica(musicaRemover);
-					this.playlistDAO.atualizar(playlist);
-				}
-			}
-			
 			this.musicaDAO.deletar(idConteudo);
 			System.out.println("Música removida com sucesso!");
 			return true;
@@ -106,13 +104,6 @@ public class ControllerAdmin {
 		Episodio episodioRemover = this.episodioDAO.buscarId(idConteudo);
 		
 		if (episodioRemover != null) {
-			for (Podcast podcast : this.podcastDAO.listarPodcasts()) {
-				if (podcast.getEpisodios().contains(episodioRemover)) {
-					podcast.removerEp(episodioRemover);
-					this.podcastDAO.atualizar(podcast);
-				}
-			}
-			
 			this.episodioDAO.deletar(idConteudo);
 			System.out.println("Episódio de podcast removido com sucesso!");
 			return true;

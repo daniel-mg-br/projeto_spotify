@@ -1,42 +1,52 @@
 package controller;
 
-import database.*;
+import dao.*;  	 
 import model.actors.*;
 import java.time.LocalDate;
 
-// Classe Controller para autenticação e cadastro de usuários
+/**
+ * Classe ControllerAutenticator para autenticação (login) e cadastro de usuários.
+ */
 public class ControllerAutenticador {
-	// Atributos das classes DAO para manipulação de dados
+	// Classes DAO como atributos para manipulação de dados.
 	private ContaDAO contaDAO;
 	private OuvinteDAO ouvinteDAO;
 	private CriadorDAO criadorDAO;
+	private AdministradorDAO adminDAO; 
 	
 	// Atributo para guardar o usuário logado
 	private static Usuario usuarioLogado = null;
 	
-	// Método Construtor
+	/**
+	 * Método construtor do Controller.
+	 */
 	public ControllerAutenticador() {
 		this.contaDAO = new ContaDAO();
 		this.ouvinteDAO = new OuvinteDAO();
 		this.criadorDAO = new CriadorDAO();
+		this.adminDAO = new AdministradorDAO();
 	}
 	
-	// Retorna o usuário logado;
+	/**
+	 * Método auxiliar para recuperar o usuario logado.
+	 * 
+	 * @return Retorna o objeto de uma das classes filhas de Usuario, com seus dados.
+	 */
 	public static Usuario getUsuarioLogado() {
 		return usuarioLogado;
 	}
 	
-	// Realiza a autenticação / login do usuário no sistema, retorna o usuário ou null (se falhar)
-	// Verificações: login compatível, objeto vazio, conta ativa, senha correta
+	/**
+	 * Realiza a autenticação / login do usuário no sistema, retorna o usuário ou null (se falhar).
+	 * Busca o login por meio da busca com a classe DAO e faz verificações de senha e de status da conta.
+	 * Depois recupera os dados do usuário em questão.
+	 * 
+	 * @param login 
+	 * @param senha
+	 * @return
+	 */
 	public Usuario login(String login, String senha) {
-		Conta contaEncontrada = null;
-		
-		for (Conta c : this.contaDAO.listarContas()) {
-			if (c.getLogin().equalsIgnoreCase(login)) {
-				contaEncontrada = c;
-				break;
-			}
-		}
+		Conta contaEncontrada = this.contaDAO.buscarLogin(login);
 		
 		if (contaEncontrada == null || !contaEncontrada.isAtiva()) {
 			System.out.println("Erro: Usuário não cadastrado ou conta inativa!");
@@ -48,12 +58,27 @@ public class ControllerAutenticador {
 			return null;
 		}
 		
-		for (Usuario u : BancoMemoria.usuarios) {
-			if (u.getConta().getId() == contaEncontrada.getId()) {
-				usuarioLogado = u;
-				System.out.println("Login efetuado com sucesso! Usuário: " + u.getNome());
-				
-				return u;
+		for (Ouvinte o : ouvinteDAO.listarOuvintes()) {
+			if (o.getConta().getId() == contaEncontrada.getId()) {
+				usuarioLogado = o;
+				System.out.println("Login efetuado com sucesso! Bem-vindo(a): " + o.getNome());
+				return o;
+			}
+		}
+		
+		for (Criador c : criadorDAO.listarCriadores()) {
+			if (c.getConta().getId() == contaEncontrada.getId()) {
+				usuarioLogado = c;
+				System.out.println("Login efetuado com sucesso! Bem-vindo(a): " + c.getNome());
+				return c;
+			}
+		}
+		
+		for (Administrador a : adminDAO.listarAdministradores()) {
+			if (a.getConta().getId() == contaEncontrada.getId()) {
+				usuarioLogado = a;
+				System.out.println("Login efetuado com sucesso! Bem-vindo(a): " + a.getNome());
+				return a;
 			}
 		}
 		
@@ -61,36 +86,52 @@ public class ControllerAutenticador {
 		return null;
 	}
 	
-	// Realiza o logout do usuário
+	/**
+	 * Método auxiliar para realizar o logout do usuário.
+	 */
 	public void logout() {
 		usuarioLogado = null;
 		System.out.println("Sessão finalizada!");
 	}
 	
-	// Cadastra o novo ouvinte no sistema, salvando o objeto na lista de Usuários do banco
+	/**
+	 * Cadastra o novo ouvinte no sistema, salvando os dados do Objeto na tabela do Banco de Dados
+	 * por meio da classe DAO.
+	 * 
+	 * @param login Login do ouvinte;
+	 * @param senha Senha do ouvinte;
+	 * @param nome Nome do ouvinte;
+	 * @param sexo Sexo do ouvinte;
+	 * @param aniversario Aniversário do ouvinte;
+	 * @return Retorna true se a operação foi bem sucedida, ou false se não.
+	 */
 	public boolean cadastrarOuvinte(String login, String senha, String nome, String sexo, LocalDate aniversario) {
-		for (Conta c : this.contaDAO.listarContas()) {
-			if (c.getLogin().equalsIgnoreCase(login)) {
-				System.out.println("Erro: este login já está sendo utilizado!");
-				return false;
-			}
+		if (this.contaDAO.buscarLogin(login) != null) {
+			System.out.println("Erro: este login já está sendo utilizado!");
+			return false;
 		}
 		
 		Conta novaConta = new Conta(login, senha);
 		this.contaDAO.salvar(novaConta);
 		
 		Ouvinte novoOuvinte = new Ouvinte(novaConta, nome, sexo, aniversario);
-		
 		return this.ouvinteDAO.salvar(novoOuvinte);
 	}
 	
-	// Cadastra o novo criador no sistema, salvando o objeto na lista de Usuários do banco
+	/**
+	 * Cadastra o novo criador no sistema, salvando o objeto na lista de Usuários do banco.
+	 * 
+	 * @param login Login da conta do criador;
+	 * @param senha Senha da conta do criador;
+	 * @param nome Nome do criador;
+	 * @param sexo Sexo do criador;
+	 * @param aniversario Aniversário do criador;
+	 * @return Retorna true se a operação foi bem sucedida, ou false se não.
+	 */
 	public boolean cadastrarCriador(String login, String senha, String nome, String sexo, LocalDate aniversario) {
-		for (Conta c : this.contaDAO.listarContas()) {
-			if (c.getLogin().equalsIgnoreCase(login)) {
-				System.out.println("Erro: este login já está sendo utilizado!");
-				return false;
-			}
+		if (this.contaDAO.buscarLogin(login) != null) {
+			System.out.println("Erro: este login já está sendo utilizado!");
+			return false;
 		}
 		
 		Conta novaConta = new Conta(login, senha);

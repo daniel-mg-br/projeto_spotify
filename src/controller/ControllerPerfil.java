@@ -1,17 +1,21 @@
 package controller;
 
-import database.*;
+import dao.*;  
 import model.actors.*;
 
-// Classe Controller para alteração de dados envolvendo a Conta e o Usuário
+/*
+ * Classe Controller para alteração de dados envolvendo a Conta e o Usuário
+ */
 public class ControllerPerfil {
-	// Classes DAO para manipulação
+	// Classes DAO como atributos para manipulação de dados.
 	private ContaDAO contaDAO;
 	private OuvinteDAO ouvinteDAO;
 	private CriadorDAO criadorDAO;
 	private AdministradorDAO adminDAO;
 	
-	// Método Construtor
+	/*
+	 * Método Construtor do Controller.
+	 */
 	public ControllerPerfil() {
 		this.contaDAO = new ContaDAO();
 		this.ouvinteDAO = new OuvinteDAO();
@@ -19,12 +23,22 @@ public class ControllerPerfil {
 		this.adminDAO = new AdministradorDAO();
 	}
 	
-	// Método para recuperar o usuário logado
+	/**
+	 * Método para recuperar o usuário logado.
+	 * 
+	 * @return Retorna o objeto da classe filha correspondente da classe Usuario.
+	 */
 	private Usuario getUsuarioLogado() {
 		return ControllerAutenticador.getUsuarioLogado();
 	}
 	
-	// Método para atualizar o nome e o sexo do usuário, com verificações de tipo de usuário e valores
+	/**
+	 * Método para atualizar o nome e o sexo do usuário, com verificações de tipo de usuário e valores.
+	 * 
+	 * @param novoNome Novo nome do usuário (se aplicável);
+	 * @param novoSexo Novo sexo do usuário (se aplicável);
+	 * @return Retorna true se a operação foi bem sucedida, e false se não.
+	 */	
 	public boolean atualizarDadosPessoais(String novoNome, String novoSexo) {
 		Usuario usuario = this.getUsuarioLogado();
 		
@@ -55,10 +69,17 @@ public class ControllerPerfil {
 		return false;
 	}
 	
-	// Método para trocar a senha da conta, com validação de valores
+	/**
+	 * Método para trocar a senha da conta, com validação de valores.
+	 * 
+	 * @param senhaAntiga Senha antiga do usuário;
+	 * @param novaSenha Nova senha do usuário;
+	 * @return Retorna true se a operação foi bem sucedida, e false se não.
+	 */
 	public boolean trocarSenha(String senhaAntiga, String novaSenha) {
 		Usuario usuario = this.getUsuarioLogado();
 		if (usuario == null) return false;
+		
 		Conta conta = usuario.getConta();
 		
 		if (!conta.validarSenha(senhaAntiga)) {
@@ -69,15 +90,21 @@ public class ControllerPerfil {
 		boolean alterou = conta.alterarSenha(novaSenha);
 		
 		if (alterou) {
+			this.contaDAO.atualizar(conta);
 			System.out.println("Senha alterada com sucesso!");
-			return this.contaDAO.atualizar(conta);
+			return true;
 		}
 		
 		System.out.println("Erro: senha nula ou igual a atual!");
 		return false;
 	}
 	
-	// Método para mudar o plano do usuário (free <---> premium), com verificação
+	/**
+	 * Método para mudar o plano do usuário (free <---> premium), com verificação.
+	 * 
+	 * @param novoPlano Novo plano da conta do usuário;
+	 * @return Retorna true se a operação foi bem sucedida, e false se não.
+	 */
 	public boolean mudarPlano(String novoPlano) {
 		Usuario usuario = this.getUsuarioLogado();
 		if (usuario == null) return false;
@@ -87,12 +114,12 @@ public class ControllerPerfil {
 		boolean alterou = conta.atualizarPlano(novoPlano);
 		
 		if (alterou) {
+			this.contaDAO.atualizar(conta);
 			System.out.println("Plano atualizado para: " + novoPlano + "!");
-			return this.contaDAO.atualizar(conta);
+			return true;
 		}
 		
 		System.out.println("Erro: plano informado é inválido!");
 		return false;
-		
 	}
 }

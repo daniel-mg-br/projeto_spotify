@@ -3,22 +3,30 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 
-// Classe Podcast, representando os podcasts de um Criador, que um Ouvinte pode ouvir
+/**
+ * Classe Podcast, representando os podcasts de um Criador que um Ouvinte pode ouvir.
+ */
 public class Podcast  {
-	// Atributos privados
-	private int id, numEpisodios;
+	
+	// Atributos privados do podcast.
+	private int id;
+	private int criadorId;
 	private String nome, tema;
 	private LocalDate criacao;
 	
-	// Lista de episódios do podcast
+	// Lista de episódios do podcast.
 	private List <Episodio> episodios;
 	
-	// Métodos Getter e Setter padrão
+	// Métodos Getter e Setter padrão.
     public int getId() {return this.id;}
     public void setId(int id) {this.id = id;}
     
-    public int getNumEpisodios() {return this.numEpisodios;}
-    public void setNumEpisodios(int numEpisodios) {this.numEpisodios = numEpisodios;}
+    public int getCriadorId() {return this.criadorId;}
+    public void setCriadorId(int criadorId) {this.criadorId = criadorId;}
+    
+    public int getNumEpisodios() {
+    	return this.episodios.size();
+    }
     
     public String getNome() {return this.nome;}
     public void setNome(String nome) {this.nome = nome;}
@@ -33,57 +41,87 @@ public class Podcast  {
     	return this.episodios;
     }
     
-    // Método Construtor
-    public Podcast(String nome, String tema) {
+    /**
+     * Método Construtor padrão para instanciação.
+     * 
+     * @param nome Nome do podcast;
+     * @param tema Tema do podcast;
+     * @param criadorId ID do criador do podcast.
+     */
+    public Podcast(String nome, String tema, int criadorId) {
     	this.id = 0;
     	this.nome = nome;
     	this.tema = tema;
-    	this.numEpisodios = 0;
+    	this.criadorId = criadorId;
     	this.criacao = LocalDate.now();
     	
     	this.episodios = new ArrayList<>();
     }
     
-    // Método Construtor com todos os dados (recuperação bd -> objeto)
-    public Podcast(int id, String nome, String tema, LocalDate criacao, int numEpisodios) {
+    /**
+     * Método Construtor com todos os dados (recuperação bd -> objeto).
+     * 
+     * @param id ID do podcast recuperado;
+     * @param nome Nome do podcast recuperado;
+     * @param tema Tema do podcast recuperado;
+     * @param criadorId ID do criador do podcast;
+     * @param criacao Data de criação do podcast.
+     */
+    public Podcast(int id, String nome, String tema, int criadorId, LocalDate criacao) {
     	this.id = id;
     	this.nome = nome;
     	this.tema = tema;
+    	this.criadorId = criadorId;
     	this.criacao = criacao;
-    	this.numEpisodios = numEpisodios;
     	
     	this.episodios = new ArrayList<>();
     }
     
-    // Método para mostrar o título dos episódios do podcast
+    /**
+     * Método para mostrar o título dos episódios do podcast.
+     */
     public void mostrarEpisodios() {
     	for (Episodio e : this.getEpisodios()) {
     		System.out.println(e.getTitulo());
     	}
     }
     
-    // Método para adicionar um episódio ao podcast, com verificação
+    /**
+     * Método para adicionar um episódio ao podcast, com verificação.
+     * 
+     * @param e Objeto de Episodio com os dados a serem salvos;
+     * @return Retorna true se a operação for bem sucedida, e false se não.
+     */
     public boolean adicionarEp(Episodio e) {
-    	if (this.episodios.contains(e) || e == null) {
-    		return false;
-    	}
-    	this.episodios.add(e);
-    	this.numEpisodios++;
-    	return true;
+    	if (e == null) return false;
+    	
+    	// .stream() transforma a lista em uma sequência de elementos;
+    	// .anyMatch() compara se a música existe nessa sequência.
+    	boolean jaExiste = this.episodios.stream().anyMatch(ep -> ep.getId() == e.getId());
+    	if (jaExiste) return false;
+    	
+    	return this.episodios.add(e);
     }
     
-    // Método para remover episódios do podcast
+    /**
+     * Método para remover episódios do podcast.
+     * 
+     * @param e Objeto de Episodio com o episodio a ser removido;
+     * @return Retorna true se a operação for bem sucedida, e false se não.
+     */
     public boolean removerEp(Episodio e) {
-    	if (this.episodios.remove(e)) {
-    		this.numEpisodios--;
-    		return true;
-    	};
-    	return false;
+    	// .removeIf() remove o(s) elemento(s) que cumpre(m) a condição entre parênteses.
+    	return this.episodios.removeIf(ep -> ep.getId() == e.getId());
     }
     
-    // Método para recuperar os dados do podcast
+    /**
+     * Método para recuperar os dados do podcast.
+     * 
+     * @return Retorna os dados em formato de String.
+     */
     public String obterDados() {
     	return "ID: " + this.getId() + "\n" +
+    		   "ID do criador: " + this.getCriadorId() + "\n" +	 
                "Nome: " + this.getNome() + "\n" +
     		   "Tema: " + this.getTema() + "\n" +
                "Episódios: " + this.getNumEpisodios() + "\n" +

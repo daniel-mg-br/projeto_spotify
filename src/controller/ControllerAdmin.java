@@ -5,7 +5,7 @@ import model.actors.*;
 import model.content.*;
 
 /**
- * Classe Controller para as responsabilidades do Administrador.
+ * Classe Controller para as responsabilidades do Administrador do sistema.
  */
 public class ControllerAdmin {
 	// Objetos DAO como atributos para manipulação de dados.
@@ -16,7 +16,7 @@ public class ControllerAdmin {
 	private EpisodioDAO episodioDAO;
 	
 	/**
-	 * Método Construtor do Controller.
+	 * Método Construtor do Controller instanciando as classes DAO.
 	 */
 	public ControllerAdmin() {
 		this.contaDAO = new ContaDAO();
@@ -55,6 +55,7 @@ public class ControllerAdmin {
 			return false;
 		}
 		
+		// Primeiro tenta buscar um Ouvinte com o ID, se não der certo, busca um Criador.
 		Usuario usuarioAlvo = this.ouvinteDAO.buscarId(idUsuario);
 		
 		if (usuarioAlvo == null) {
@@ -66,6 +67,7 @@ public class ControllerAdmin {
 			return false;
 		}
 		
+		// Recupera a Conta do usuário a ser suspenso e atualiza seu status.
 		Conta contaAlvo = usuarioAlvo.getConta();
 		contaAlvo.setStatus("Suspenso");
 		
@@ -93,6 +95,7 @@ public class ControllerAdmin {
 			return false;
 		}
 		
+		// Tenta buscar uma Música associada ao ID, se der errado, tenta buscar um Episódio.
 		Musica musicaRemover = this.musicaDAO.buscarId(idConteudo);
 		
 		if (musicaRemover != null) {

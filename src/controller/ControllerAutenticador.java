@@ -18,7 +18,7 @@ public class ControllerAutenticador {
 	private static Usuario usuarioLogado = null;
 	
 	/**
-	 * Método construtor do Controller.
+	 * Método construtor do Controller instanciando as classes DAO.
 	 */
 	public ControllerAutenticador() {
 		this.contaDAO = new ContaDAO();
@@ -48,16 +48,19 @@ public class ControllerAutenticador {
 	public Usuario login(String login, String senha) {
 		Conta contaEncontrada = this.contaDAO.buscarLogin(login);
 		
+		// Validação de conta nula.
 		if (contaEncontrada == null || !contaEncontrada.isAtiva()) {
 			System.out.println("Erro: Usuário não cadastrado ou conta inativa!");
 			return null;
 		}
 		
+		// Validação de senha correta.
 		if (!contaEncontrada.validarSenha(senha)) {
 			System.out.println("Erro: senha incorreta!");
 			return null;
 		}
 		
+		// Tenta buscar um ouvinte com associado à Conta encontrada.
 		for (Ouvinte o : ouvinteDAO.listarOuvintes()) {
 			if (o.getConta().getId() == contaEncontrada.getId()) {
 				usuarioLogado = o;
@@ -66,6 +69,7 @@ public class ControllerAutenticador {
 			}
 		}
 		
+		// Se der errado, tenta buscar um Criador.
 		for (Criador c : criadorDAO.listarCriadores()) {
 			if (c.getConta().getId() == contaEncontrada.getId()) {
 				usuarioLogado = c;
@@ -74,6 +78,7 @@ public class ControllerAutenticador {
 			}
 		}
 		
+		// Por fim, busca um Administrador associado à Conta.
 		for (Administrador a : adminDAO.listarAdministradores()) {
 			if (a.getConta().getId() == contaEncontrada.getId()) {
 				usuarioLogado = a;
@@ -106,14 +111,18 @@ public class ControllerAutenticador {
 	 * @return Retorna true se a operação foi bem sucedida, ou false se não.
 	 */
 	public boolean cadastrarOuvinte(String login, String senha, String nome, String sexo, LocalDate aniversario) {
+		
+		// Verifica se o login já está sendo utilizado por uma Conta existente.
 		if (this.contaDAO.buscarLogin(login) != null) {
 			System.out.println("Erro: este login já está sendo utilizado!");
 			return false;
 		}
 		
+		// Cria a nova Conta e salva no banco de dados.
 		Conta novaConta = new Conta(login, senha);
 		this.contaDAO.salvar(novaConta);
 		
+		// Cria um novo Ouvinte associado a essa Conta e salva.
 		Ouvinte novoOuvinte = new Ouvinte(novaConta, nome, sexo, aniversario);
 		return this.ouvinteDAO.salvar(novoOuvinte);
 	}
@@ -129,14 +138,18 @@ public class ControllerAutenticador {
 	 * @return Retorna true se a operação foi bem sucedida, ou false se não.
 	 */
 	public boolean cadastrarCriador(String login, String senha, String nome, String sexo, LocalDate aniversario) {
+		
+		// Verifica se o login já está sendo utilizado por uma Conta existente.
 		if (this.contaDAO.buscarLogin(login) != null) {
 			System.out.println("Erro: este login já está sendo utilizado!");
 			return false;
 		}
 		
+		// Cria a nova Conta e salva no banco de dados.
 		Conta novaConta = new Conta(login, senha);
 		this.contaDAO.salvar(novaConta);
 		
+		// Cria um novo Criador associado a essa Conta e salva.
 		Criador novoCriador = new Criador(novaConta, nome, sexo, aniversario);
 		return this.criadorDAO.salvar(novoCriador);
 	}

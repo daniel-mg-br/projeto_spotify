@@ -15,7 +15,7 @@ public class ControllerCriador {
     private EpisodioDAO episodioDAO;
 
     /**
-     * Método Construtor do Controller.
+     * Método Construtor do Controller instanciando as classes DAO.
      */
     public ControllerCriador() {
         this.albumDAO = new AlbumDAO();
@@ -44,13 +44,13 @@ public class ControllerCriador {
      * 
      * @param titulo Título do álbum;
      * @param tipo Tipo do álbum;
-     * @param criadorId ID do Criador de conteúdo;
      * @return Retorna true se a operação for bem sucedida, e false se não.	
      */
     public boolean criarAlbum(String titulo, String tipo) {
     	Criador criador = this.getCriadorLogado();
     	if (criador == null) return false;
     	
+    	// Instancia um novo álbum com as informações fornecidas e salva no banco de dados.
     	Album novoAlbum = new Album(titulo, tipo, criador.getId());
     	this.albumDAO.salvar(novoAlbum);
     	
@@ -72,13 +72,16 @@ public class ControllerCriador {
     	Criador criador = this.getCriadorLogado();
     	Album album = this.albumDAO.buscarId(idAlbum);
     	
+    	// Verifica se o criador e o álbum são nulos, assim como se o álbum pertence ao criador.
     	if (criador == null || album == null || album.getCriadorId() != criador.getId()) return false;
-    		
+    	
+    	// Instancia a nova música e salva no banco de dados.
     	Musica novaMusica = new Musica(titulo, duracao);
     	novaMusica.setGenero(genero);
     	novaMusica.setLetra(letra);
     	this.musicaDAO.salvar(novaMusica);
     	
+    	// Salva a música no álbum e grava no banco de dados.
     	album.adicionarFaixa(novaMusica);
     	this.albumDAO.atualizar(album);
     	
@@ -98,23 +101,29 @@ public class ControllerCriador {
     	Album album = this.albumDAO.buscarId(idAlbum);
     	Musica musica = this.musicaDAO.buscarId(idMusica);
     	
+    	// Verifica se os objetos recuperados são nulos.
     	if (criador == null || album == null || musica == null) return false;
     	
+    	// Verifica se o álbum pertence ao criador recuperado.
     	if (album.getCriadorId() != criador.getId()) {
     		System.out.println("Erro: acesso negado ao álbum!");
     		return false;
     	}
     	
+    	// Verifica se a música a ser removida está contida no álbum.
+    	// .stream() converte a coleação em uma sequência de elementos.
+    	// anyMatch() confere se a música com o ID requerido bate com algum ID dos elementos do .stream()
     	boolean pertenceAoAlbum = album.getMusicas().stream().anyMatch(m -> m.getId() == musica.getId());
     	if (!pertenceAoAlbum) {
     		System.out.println("Erro: essa música não pertence ao álbum!");
     		return false;
     	}
     	
+    	// Remove a faixa do álbum e salva no banco de dados.
     	album.removerFaixa(musica);
     	this.albumDAO.atualizar(album);
     	this.musicaDAO.deletar(idMusica);
-    	
+    
     	System.out.println("Música removida do álbum!");
     	return true;
     }
@@ -129,6 +138,8 @@ public class ControllerCriador {
     	Criador criador = this.getCriadorLogado();
     	Album album = this.albumDAO.buscarId(idAlbum);
     	
+    	// Verifica se os objetos são nulos e se o álbum pertence ao criador.
+    	// Se der certo, altera o status do objeto do Album e atualiza o banco de dados.
     	if (criador != null && album != null && album.getCriadorId() == criador.getId()) {
     		album.lancarAlbum();
     		this.albumDAO.atualizar(album);
@@ -147,12 +158,15 @@ public class ControllerCriador {
     	Criador criador = this.getCriadorLogado();
     	Album album = this.albumDAO.buscarId(idAlbum);
     	
+    	// Verificação de objetos nulos e se o álbum pertence ao criador.
     	if (criador == null || album == null || album.getCriadorId() != criador.getId()) return false;
     	
+    	// Deleta remove as músicas do álbum, atualizando o banco de dados.
     	for (Musica faixa : album.getMusicas()) {
     		this.musicaDAO.deletar(faixa.getId());
     	}
     	
+    	// Atualiza a tabela de álbuns removendo o álbum.
     	criador.removerAlbum(album);
     	this.albumDAO.deletar(idAlbum);
     	
@@ -165,13 +179,13 @@ public class ControllerCriador {
      * 
      * @param nome Nome do podcast novo;
      * @param tema Tema do podcast;
-     * @param criadorId ID do criador de conteúdo responsável;
      * @return Retorna true se a operação for bem sucedida, e false se não.
      */
     public boolean criarPodcast(String nome, String tema) {
     	Criador criador = this.getCriadorLogado();
     	if (criador == null) return false;
     	
+    	// Instancia o novo podcast e salva no banco de dados.
     	Podcast novoPodcast = new Podcast(nome, tema, criador.getId());
     	this.podcastDAO.salvar(novoPodcast);
     	
@@ -192,12 +206,15 @@ public class ControllerCriador {
     	Criador criador = this.getCriadorLogado();
     	Podcast podcast = this.podcastDAO.buscarId(idPodcast);
     	
+    	// Validação de objetos nulos e se o podcast pertence ao criador.
     	if (criador == null || podcast == null || podcast.getCriadorId() != criador.getId()) return false;
     	
+    	// Instancia o novo episódio e salva no banco de dados.
     	Episodio novoEp = new Episodio(titulo, duracao);
     	novoEp.setNumEpisodio(numEpisodio);
     	this.episodioDAO.salvar(novoEp);
     	
+    	// Salva o episódio no podcast e grava a mudança no banco.
     	podcast.adicionarEp(novoEp);
     	this.podcastDAO.atualizar(podcast);
     	
@@ -217,19 +234,25 @@ public class ControllerCriador {
     	Podcast podcast = this.podcastDAO.buscarId(idPodcast);
     	Episodio episodio = this.episodioDAO.buscarId(idEpisodio);
     	
+    	// Verifica se os objetos recuperados são nulos.
     	if (criador == null || podcast == null || episodio == null) return false;
     	
+    	// Verifica se o álbum pertence ao criador.
     	if (podcast.getCriadorId() != criador.getId()) {
     		System.out.println("Erro: acesso negado ao podcast!");
     		return false;
     	}
     	
+    	// Verifica se o episódio faz parte do podcast.
+    	// .stream() converte a coleação em uma sequência de elementos.
+    	// anyMatch() confere se a música com o ID requerido bate com algum ID dos elementos do .stream()
     	boolean pertenceAoPodcast = podcast.getEpisodios().stream().anyMatch(ep -> ep.getId() == episodio.getId());
     	if (!pertenceAoPodcast) {
     		System.out.println("Erro: episódio não encontrado!");
     		return false;
     	}
     	
+    	// Remove o episódio do podcast e atualiza o banco de dados.
     	podcast.removerEp(episodio);
     	this.podcastDAO.atualizar(podcast);
     	this.episodioDAO.deletar(idEpisodio);
@@ -248,12 +271,15 @@ public class ControllerCriador {
     	Criador criador = this.getCriadorLogado();
     	Podcast podcast = this.podcastDAO.buscarId(idPodcast);
     	
+    	// Verificação de classes nulas e se o podcast pertence ao criador.
     	if (criador == null || podcast == null || podcast.getCriadorId() != criador.getId()) return false;
     	
+    	// Remove os episódios do podcast e atualiza o banco de dados.
     	for (Episodio ep : podcast.getEpisodios()) {
     		this.episodioDAO.deletar(ep.getId());
     	}
     	
+    	// Atualiza a tabela de podcasts removendo o podcast.
     	criador.removerPodcast(podcast);
     	this.podcastDAO.deletar(idPodcast);
     	

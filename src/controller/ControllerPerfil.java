@@ -4,7 +4,7 @@ import dao.*;
 import model.actors.*;
 
 /*
- * Classe Controller para alteração de dados envolvendo a Conta e o Usuário
+ * Classe Controller para alteração de dados envolvendo a Conta e o Usuário.
  */
 public class ControllerPerfil {
 	// Classes DAO como atributos para manipulação de dados.
@@ -14,7 +14,7 @@ public class ControllerPerfil {
 	private AdministradorDAO adminDAO;
 	
 	/*
-	 * Método Construtor do Controller.
+	 * Método Construtor do Controller instanciando as classes DAO.
 	 */
 	public ControllerPerfil() {
 		this.contaDAO = new ContaDAO();
@@ -42,14 +42,17 @@ public class ControllerPerfil {
 	public boolean atualizarDadosPessoais(String novoNome, String novoSexo) {
 		Usuario usuario = this.getUsuarioLogado();
 		
+		// Validação de usuário nulo.
 		if (usuario == null) {
 			System.out.println("Erro: nenhum usuário logado!");
 			return false;
 		}
 		
+		// Tenta atualizar o nome e o sexo do Objeto do usuário logado.
 		boolean alterouNome = usuario.alterarNome(novoNome);
 		boolean alterouSexo = usuario.alterarSexo(novoSexo);
 		
+		// Aplica a atualização no banco de dados, escolhendo o DAO de acordo com o tipo de usuário atualizado.
 		if (alterouNome || alterouSexo) {
 			if (usuario instanceof Ouvinte) 
 			{
@@ -77,16 +80,20 @@ public class ControllerPerfil {
 	 * @return Retorna true se a operação foi bem sucedida, e false se não.
 	 */
 	public boolean trocarSenha(String senhaAntiga, String novaSenha) {
+		
+		// Verificação de usuário nulo.
 		Usuario usuario = this.getUsuarioLogado();
 		if (usuario == null) return false;
 		
 		Conta conta = usuario.getConta();
 		
+		// Verifica se as senha nova é igual à antiga.
 		if (!conta.validarSenha(senhaAntiga)) {
 			System.out.println("Erro: senha antiga incorreta!");
 			return false;
 		}
 		
+		// Tenta alterar a senha no objeto, se der certo, atualiza o banco de dados.
 		boolean alterou = conta.alterarSenha(novaSenha);
 		
 		if (alterou) {
@@ -106,13 +113,17 @@ public class ControllerPerfil {
 	 * @return Retorna true se a operação foi bem sucedida, e false se não.
 	 */
 	public boolean mudarPlano(String novoPlano) {
+		
+		// Verificação de usuário nulo.
 		Usuario usuario = this.getUsuarioLogado();
 		if (usuario == null) return false;
 		
 		Conta conta = usuario.getConta();
 		
+		// Tenta atualizar o status do objeto da Conta recuperada.
 		boolean alterou = conta.atualizarPlano(novoPlano);
 		
+		// Se der certo, atualiza o banco de dados.
 		if (alterou) {
 			this.contaDAO.atualizar(conta);
 			System.out.println("Plano atualizado para: " + novoPlano + "!");

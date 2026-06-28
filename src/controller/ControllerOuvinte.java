@@ -25,7 +25,7 @@ public class ControllerOuvinte {
 	private CriadorDAO criadorDAO;
 	
 	/**
-	 * Método Construtor do Controller.
+	 * Método Construtor do Controller instanciando as classes DAO.
 	 */
 	public ControllerOuvinte() {
 		this.ouvinteDAO = new OuvinteDAO();
@@ -56,7 +56,6 @@ public class ControllerOuvinte {
 	 * 
 	 * @param titulo Título da nova playlist;
 	 * @param descricao Descrição da playlist criada;
-	 * @param criadorId ID do ouvinte criador da playlist;
 	 * @return Retorna true se a operação for bem sucedida, e false se não.
 	 */
 	public boolean criarPlaylist(String titulo, String descricao) {
@@ -67,6 +66,7 @@ public class ControllerOuvinte {
 			return false;
 		}
 		
+		// Instancia a nova playlist e atualiza o banco de dados.
 		Playlist novaPlaylist = new Playlist(titulo, descricao, ouvinte.getId());
 		this.playlistDAO.salvar(novaPlaylist);
 		
@@ -84,13 +84,16 @@ public class ControllerOuvinte {
 		Ouvinte ouvinte = this.getOuvinteLogado();
 		Playlist playlist = this.playlistDAO.buscarId(idPlaylist);
 		
+		// Verifica se os objetos recuperados são nulos.
 		if (ouvinte == null || playlist == null) return false;
 		
+		// Verifica se a playlist pertence ao ouvinte.
 		if (playlist.getUsuarioId() != ouvinte.getId()) {
 			System.out.println("Erro: playlist inválida!");
 			return false;
 		}
 		
+		// Remove a playlist e atualiza o banco de dados.
 		ouvinte.removerPlaylist(playlist);
 		
 		boolean deletou = this.playlistDAO.deletar(idPlaylist);
@@ -114,27 +117,33 @@ public class ControllerOuvinte {
 		Playlist playlist = this.playlistDAO.buscarId(idPlaylist);
 		Musica musica = this.musicaDAO.buscarId(idMusica);
 		
+		// Verifica se os objetos recuperados são nulos.
 		if (ouvinte == null || playlist == null || musica == null) {
 			return false;
 		}
 		
+		// Verifica se a playlist pertence ao ouvinte.
 		if (playlist.getUsuarioId() != ouvinte.getId()) {
 			System.out.println("Erro: playlist inválida!");
 			return false;
 		}
 		
+		// Atualiza o banco de dados com a playlist nova.
 		boolean adicionou = playlist.adicionarMusica(musica);
 		
 		if (adicionou) {
 			this.playlistDAO.atualizar(playlist);
 			System.out.println("Música: " + musica.getTitulo() + " adicionada à playlist!");
 			
+			// Atualiza os minutos ouvidos do ouvinte
 			ouvinte.adicionarTempo(musica.getDuracaoMin());
 			this.ouvinteDAO.atualizar(ouvinte);
 			
+			// Busca a música adicionada na bibliografia do autor.
 			for (Album album : this.albumDAO.listarAlbuns()) {
 				boolean musicaNoAlbum = album.getMusicas().stream().anyMatch(m -> m.getId() == idMusica);
 				
+				// Se a música for encontrada, atualiza os ouvintes mensais do criador.
 				if (musicaNoAlbum) {
 					Criador criador = this.criadorDAO.buscarId(album.getCriadorId());
 					
@@ -151,7 +160,8 @@ public class ControllerOuvinte {
 	}
 	
 	/**
-	 * Método para remover a música da playlist, verificando objetos nulos e veracidade de relacionamentos
+	 * Método para remover a música da playlist, verificando objetos nulos e veracidade de relacionamentos.
+	 * 
 	 * @param idPlaylist ID da playlist a perder a música;
 	 * @param idMusica ID da música a ser removida;
 	 * @return Retorna true se a operação for bem sucedida, e false se não.
@@ -161,13 +171,16 @@ public class ControllerOuvinte {
 		Playlist playlist = this.playlistDAO.buscarId(idPlaylist);
 		Musica musica = this.musicaDAO.buscarId(idMusica);
 		
+		// Verifica se os objetos são nulos.
 		if (ouvinte == null || playlist == null || musica == null) return false;
 		
+		// Verifica se a playlist pertence ao ouvinte.
 		if (playlist.getUsuarioId() != ouvinte.getId()) {
 			System.out.println("Erro: você não tem permissão para alterar a playlist!");
 			return false;
 		}
 		
+		// Remove a música da playlist e atualiza o banco de dados.
 		boolean removeu = playlist.removerMusica(musica);
 		
 		if (removeu) {
@@ -190,20 +203,24 @@ public class ControllerOuvinte {
 		Ouvinte ouvinte = this.getOuvinteLogado();
 		Playlist playlist = this.playlistDAO.buscarId(idPlaylist);
 		
+		// Verifica se os objetos recuperados são nulos.
 		if (ouvinte == null || playlist == null) {
 			return false;
 		}
 		
+		// Verifica se a playlist pertence ao ouvinte.
 		if (playlist.getUsuarioId() != ouvinte.getId()) {
 			System.out.println("Erro: playlist inválida!");
 			return false;
 		}
 		
+		// Verifica se a playlist já é pública.
 		if (playlist.isCompartilhar()) {
 			System.out.println("Aviso: a playlist " + playlist.getTitulo() + " já é pública!");
 			return false;
 		}
 		
+		// Atualiza o status da playlist e salva no banco de dados.
 		playlist.compartilhar();
 		boolean atualizou = this.playlistDAO.atualizar(playlist);
 		
@@ -224,26 +241,32 @@ public class ControllerOuvinte {
 		Ouvinte ouvinte = this.getOuvinteLogado();
 		Album album = this.albumDAO.buscarId(idAlbum);
 		
+		// Verificação de objetos nulos.
 		if (ouvinte == null || album == null) return false;
 		
+		// Verifica se o álbum já está favoritado.
 		boolean jaExiste = ouvinte.getAlbunsFavoritos().stream().anyMatch(a -> a.getId() == idAlbum);
 		if (jaExiste) {
 			System.out.println("O álbum já consta nos favoritos!");
 			return false;
 		}
 		
+		// Adiciona os álbuns aos favoritos e atualiza o banco de dados.
 		ouvinte.adicionarAlbumFav(album);
 		this.ouvinteDAO.atualizar(ouvinte); 
 		System.out.println("Álbum: " + album.getTitulo() + " adicionado aos favoritos!");
 		
+		// Adiciona ao tempo ouvido do ouvinte.
 		int duracaoTotal = 0;
 		for (Musica m : album.getMusicas()) {
 			duracaoTotal += m.getDuracaoMin();
 		}
 		
+		// Atualiza o banco de dados com os minutos ouvintos.
 		ouvinte.adicionarTempo(duracaoTotal);
 		this.ouvinteDAO.atualizar(ouvinte);
 		
+		// Atualiza os ouvintes mensais do criador e atualiza o banco de dados.
 		Criador criador = this.criadorDAO.buscarId(album.getCriadorId());
 		if (criador != null) {
 			criador.adicionarEngajamento();
@@ -263,10 +286,13 @@ public class ControllerOuvinte {
 		Ouvinte ouvinte = this.getOuvinteLogado();
 		Album album = this.albumDAO.buscarId(idAlbum);
 		
+		// Verifica se os objetos recuperados são nulos.
 		if (ouvinte == null || album == null) return false;
 		
+		// Tenta remover o álbum favoritado da lista.
 		boolean removeu = ouvinte.getAlbunsFavoritos().removeIf(a -> a.getId() == idAlbum);
 		
+		// Se der certo, atualiza o banco de dados.
 		if (removeu) {
 			this.ouvinteDAO.atualizar(ouvinte);
 			System.out.println("Álbum removido dos favoritos!");
@@ -285,26 +311,32 @@ public class ControllerOuvinte {
 		Ouvinte ouvinte = this.getOuvinteLogado();
 		Podcast podcast = this.podcastDAO.buscarId(idPodcast);
 		
+		// Verifica se os objetos recuperados são nulos.
 		if (ouvinte == null || podcast == null) return false;
 		
+		// Verifica se o podcasts já estão favoritados.
 		boolean jaExiste = ouvinte.getPodcastsFavoritos().stream().anyMatch(p -> p.getId() == idPodcast);
 		if (jaExiste) {
 			System.out.println("Este podcast já está nos favoritos!");
 			return false;
 		}
 		
+		// Adiciona o podcast favorito e salva o no banco de dados.
 		ouvinte.adicionarPodcastFav(podcast);
 		this.ouvinteDAO.atualizar(ouvinte);
 		System.out.println("Podcast: " + podcast.getNome() + " adicionado aos favoritos!");
 		
+		// Atualiza o tempo ouvido pelo ouvinte.
 		int duracaoTotal = 0;
 		for (Episodio ep : podcast.getEpisodios()) {
 			duracaoTotal += ep.getDuracaoMin();
 		}
 		
+		// Atualiza os minutos ouvidos no banco de dados.
 		ouvinte.adicionarTempo(duracaoTotal);
 		this.ouvinteDAO.atualizar(ouvinte);
 		
+		// Incrementa os ouvintes mensais do criador e atualiza o banco de dados.
 		Criador criador = this.criadorDAO.buscarId(podcast.getCriadorId());
 		if (criador != null) {
 			criador.adicionarEngajamento();
@@ -324,8 +356,10 @@ public class ControllerOuvinte {
 		Ouvinte ouvinte = this.getOuvinteLogado();
 		Podcast podcast = this.podcastDAO.buscarId(idPodcast);
 		
+		// Verifica se os objetos recuperados são nulos.
 		if (ouvinte == null || podcast == null) return false;
 		
+		// Tenta remover o podcast da lista de favoritos e salva no banco de dados se der certo.
 		boolean removeu = ouvinte.getPodcastsFavoritos().removeIf(p -> p.getId() == idPodcast);		
 		if (removeu) {
 			this.ouvinteDAO.atualizar(ouvinte);
@@ -346,7 +380,7 @@ public class ControllerOuvinte {
         // O HashMap vai guardar o nome do Gênero (String) e quantas vezes ele apareceu (Integer)
         Map<String, Integer> contagemGeneros = new HashMap<>();
 
-        // 1. Contabiliza os gêneros das músicas nas Playlists
+        // Contabiliza os gêneros das músicas nas Playlists
         for (Playlist p : ouvinte.getPlaylists()) {
             for (Musica m : p.getMusicas()) {
                 String genero = m.getGenero();
@@ -355,7 +389,7 @@ public class ControllerOuvinte {
             }
         }
 
-        // 2. Contabiliza os gêneros das músicas nos Álbuns Favoritos
+        // Contabiliza os gêneros das músicas nos Álbuns Favoritos
         for (Album a : ouvinte.getAlbunsFavoritos()) {
             for (Musica m : a.getMusicas()) {
                 String genero = m.getGenero();
@@ -370,7 +404,7 @@ public class ControllerOuvinte {
             return;
         }
 
-        // 3. Descobre qual gênero teve a maior pontuação
+        // Descobre qual gênero teve a maior pontuação
         String generoFavorito = "";
         int maiorContagem = 0;
 
@@ -381,7 +415,7 @@ public class ControllerOuvinte {
             }
         }
 
-        // 4. Salva o resultado no banco
+        // Salva o resultado no banco
         ouvinte.setGeneroFavorito(generoFavorito);
         this.ouvinteDAO.atualizar(ouvinte);
         System.out.println("Novo gênero favorito calculado: " + generoFavorito + " (" + maiorContagem + " músicas)");

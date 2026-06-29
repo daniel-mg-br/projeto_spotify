@@ -8,7 +8,7 @@ import model.content.Playlist;
 import model.content.Musica;
 
 /**
- * Classe DAO para manipulação de playlists do banco.
+ * Classe PlaylistDAO para manipulação de playlists do banco.
  */
 public class PlaylistDAO {
 	private MusicaDAO musicaDAO;
@@ -26,6 +26,12 @@ public class PlaylistDAO {
 	public boolean salvar(Playlist novaPlaylist) {
 		if (novaPlaylist == null) return false;
 		
+		/*
+		 *  Estabelece a conexão JDBC.
+		 *  
+		 *  Atribuindo 'false' ao Auto Commit por segurança, assim o rollback é possível em caso de
+		 *  erros nas operações envolvendo a música e o conteúdo.
+		 */
 		Connection conn = null;
 		try
 		{
@@ -34,12 +40,14 @@ public class PlaylistDAO {
 
 			inserirPlaylist(conn, novaPlaylist);
 			sincronizarMusicas(conn, novaPlaylist); 
-
+			
+			// Se der certo, aplica as mudanças.
 			conn.commit();
 			return true;
 		}
 		catch (SQLException e)
 		{
+			// Se der errado, tenta o Rollback da transação.
 			System.out.println("Erro ao salvar playlist, rollback... " + e.getMessage());
 			try {
 				if (conn != null) conn.rollback();
@@ -50,8 +58,14 @@ public class PlaylistDAO {
 		}
 		finally
 		{
+			// Habilita o Auto Commit e fecha a conexão.
 			if (conn != null) {
-				try {conn.setAutoCommit(true); conn.close();} catch (SQLException e) {e.printStackTrace();}
+				try {
+					conn.setAutoCommit(true); 
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}	
 		return false;
@@ -64,14 +78,18 @@ public class PlaylistDAO {
 	 * @return Retorna o objeto de Musica com os dados, ou null se a consulta falhar.
 	 */
 	public Playlist buscarId(int id) {
+		
+		// String sql com a consulta a ser executada. 
 		String sql = "SELECT id, titulo, descricao, compartilhar, criacao, ouvinte_id " +
 					 "FROM playlist WHERE id = ?";
 		
+		// Tenta a conexão com o banco de dados e a execução da consulta.
 		try (Connection conn = ConnectionFactory.getConexao();
 			 PreparedStatement stmt = conn.prepareStatement(sql))
 		{
 			stmt.setInt(1, id);
 			
+			// Recupera o objeto com os dados do ResultSet.
 			try (ResultSet rs = stmt.executeQuery()) {
 				if (rs.next()) {
 					Playlist playlistEncontrada = mapearPlaylist(conn, rs);
@@ -92,15 +110,21 @@ public class PlaylistDAO {
 	 * @return Retorna a lista com todas as playlists registradas.
 	 */
 	public List <Playlist> listarPlaylists() {
+		
+		// String sql com a consulta a ser executada.
 		String sql = "SELECT id, titulo, descricao, compartilhar, criacao, ouvinte_id "
 				   + " FROM playlist";
 		
+		// Lista para guardar as playlists recuperadas.
 		List <Playlist> playlists = new ArrayList<>();
 		
+		// Tenta a conexão com o banco de dados e a execução da consulta.
 		try (Connection conn = ConnectionFactory.getConexao();
 			 PreparedStatement stmt = conn.prepareStatement(sql);
 			 ResultSet rs = stmt.executeQuery())
 		{
+			
+			// Itera pelo ResultSet preenchendo a lista com as playlists reconstruídas.
 			while (rs.next()) {
 				Playlist p = mapearPlaylist(conn, rs);
 				playlists.add(p);
@@ -120,14 +144,19 @@ public class PlaylistDAO {
 	 * @return Retorna a lista de playlists do ouvinte.
 	 */
 	public List <Playlist> buscarPorUsuario(Connection conn, int usuarioId) {
+		
+		// String sql com a consulta a ser executada.
 		String sql = "SELECT id, titulo, descricao, compartilhar, criacao, ouvinte_id "
 				   + "FROM playlist WHERE ouvinte_id = ?";
 		
+		// Lista para guardar as playlists reconstruídas.
 		List <Playlist> playlists = new ArrayList<>();
+		
 		try (PreparedStatement stmt = conn.prepareStatement(sql))
 		{
 			stmt.setInt(1, usuarioId);
 			
+			// Tenta ler os dados do ResultSet e preenche a lista com as playlists recuperadas
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					Playlist p = mapearPlaylist(conn, rs);
@@ -151,6 +180,7 @@ public class PlaylistDAO {
 	public boolean atualizar(Playlist playlistAtualizada) {
 		if (playlistAtualizada == null) return false;
 		
+		// Estabelece a conexão, mantendo o esquema com o Auto Commit e Rollback anteriores.
 		Connection conn = null;
 		try
 		{
@@ -165,6 +195,7 @@ public class PlaylistDAO {
 		}
 		catch (SQLException e)
 		{
+			// Tenta o Rollback da transação.
 			System.out.println("Erro ao atualizar playlist, rollback... " + e.getMessage());
 			try {
 				if (conn != null) conn.rollback();
@@ -174,8 +205,14 @@ public class PlaylistDAO {
 		}
 		finally
 		{
+			// Habilita o Auto Commit e fecha a conexão.
 			if (conn != null) {
-				try {conn.setAutoCommit(true); conn.close();} catch (SQLException e) {e.printStackTrace();}
+				try {
+					conn.setAutoCommit(true); 
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return false;
@@ -190,6 +227,7 @@ public class PlaylistDAO {
 	public boolean deletar(int id) {
 		String sql = "DELETE FROM playlist WHERE id = ?";
 		
+		// Tenta a conexão com banco de dados e a deleção.
 		try (Connection conn = ConnectionFactory.getConexao();
 			 PreparedStatement stmt = conn.prepareStatement(sql))
 		{
@@ -214,6 +252,7 @@ public class PlaylistDAO {
 		String sql = "INSERT INTO playlist (titulo, descricao, compartilhar, criacao, ouvinte_id) "
 				+ "VALUES (?,?,?,?,?)";
 		
+		// Tenta a conexão com o banco de dados e a inserção da playlist.
 		try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
 		{
 			stmt.setString(1, playlist.getTitulo());
@@ -223,6 +262,7 @@ public class PlaylistDAO {
 			stmt.setInt(5, playlist.getUsuarioId());
 			stmt.executeUpdate();
 			
+			// Preenche o ID da playlist nova com o ID automático da query.
 			try (ResultSet rs = stmt.getGeneratedKeys()) {
 				if (rs.next()) playlist.setId(rs.getInt(1));
 				else throw new SQLException("Falha ao gerar ID da playlist");
@@ -241,6 +281,7 @@ public class PlaylistDAO {
 		String sql = "UPDATE playlist SET titulo = ?, descricao = ?, compartilhar = ?, criacao = ?, ouvinte_id = ? "
 				   + "WHERE id = ?";
 		
+		// Tenta estabelecer a conexão e atualizar a tabela.
 		try (PreparedStatement stmt = conn.prepareStatement(sql))
 		{
 			stmt.setString(1, playlist.getTitulo());
@@ -261,6 +302,8 @@ public class PlaylistDAO {
 	 * @throws SQLException Caso haja erro de SQL, dispara uma exceção.
 	 */
 	private void sincronizarMusicas(Connection conn, Playlist playlist) throws SQLException {
+		
+		// Primeiro, deleta as músicas existentes na lista (antigas).
 		String sqlDel = "DELETE FROM playlist_musica WHERE playlist_id = ?";
 		try (PreparedStatement stmt = conn.prepareStatement(sqlDel))
 		{
@@ -270,6 +313,7 @@ public class PlaylistDAO {
 		
 		if (playlist.getMusicas() == null || playlist.getMusicas().isEmpty()) return;
 		
+		// Segundo, reinsere as músicas, incluindo as novas.
 		String sqlIns = "INSERT INTO playlist_musica (playlist_id, musica_id) VALUES (?,?)";
 		try (PreparedStatement stmt = conn.prepareStatement(sqlIns))	
 		{
@@ -295,6 +339,7 @@ public class PlaylistDAO {
 		{
 			stmt.setInt(1, playlist.getId());
 			
+			// Tenta ler o ResultSet e carregar as músicas a partir dos dados retornados.
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					int musicaId = rs.getInt("musica_id");
@@ -308,6 +353,7 @@ public class PlaylistDAO {
 	/**
 	 * Método auxiliar para a reconstrução de um objeto a partir dos dados da consulta.
 	 * 
+	 * @param conn Conexão com SQLite fornecida pela ConnectionFactory.
 	 * @param rs ResultSet com os dados da playlist gerado pelo SELECT;
 	 * @throws SQLException Caso haja erro de SQL, dispara uma exceção.
 	 */
@@ -315,6 +361,7 @@ public class PlaylistDAO {
 		Date dataBanco = rs.getDate("criacao");
 		LocalDate criacao = (dataBanco != null) ? dataBanco.toLocalDate() : null;
 
+		// Instancia a playlist a partir dos dados do ResultSet.
 		Playlist playlistEncontrada = new Playlist(
 				rs.getInt("id"),
 				rs.getInt("ouvinte_id"),

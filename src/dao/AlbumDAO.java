@@ -8,7 +8,7 @@ import model.content.Album;
 import model.content.Musica;
 
 /*
- * Classe DAO para manipulação de álbuns do banco
+ * Classe AlbumDAO para manipulação de dados dos álbuns do banco.
  */
 public class AlbumDAO {
 	
@@ -26,6 +26,12 @@ public class AlbumDAO {
 	public boolean salvar(Album novoAlbum) {
 		if (novoAlbum == null) return false;
 		
+		/*
+		 *  Estabelece a conexão JDBC.
+		 *  
+		 *  Atribuindo 'false' ao Auto Commit por segurança, assim o rollback é possível em caso de
+		 *  erros nas operações envolvendo a música e o conteúdo.
+		 */
 		Connection conn = null;
 		try {
 			conn = ConnectionFactory.getConexao();
@@ -33,7 +39,8 @@ public class AlbumDAO {
 
 			inserirAlbum(conn, novoAlbum);
 			sincronizarMusicas(conn, novoAlbum);
-
+			
+			// Se der certo, aplica as mudanças.
 			conn.commit();
 			return true;
 		}
@@ -41,6 +48,7 @@ public class AlbumDAO {
 		{
 			System.out.println("Erro ao salvar álbum, rollback..." + e.getMessage());
 			
+			// Se não der certo, tenta o Rollback da transação.
 			try {
 				if (conn != null) conn.rollback();
 			} catch (SQLException ex) {
@@ -49,8 +57,14 @@ public class AlbumDAO {
 		}
 		finally
 		{
+			// Habilita o Auto Commit e fecha a conexeção.
 			if (conn != null) {
-				try {conn.setAutoCommit(true); conn.close();} catch (SQLException e) {e.printStackTrace();}
+				try {
+					conn.setAutoCommit(true); 
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return false;
@@ -63,13 +77,17 @@ public class AlbumDAO {
 	 * @return Retorna o objeto de Album com os dados requeridos.
 	 */
 	public Album buscarId(int id) {
+		
+		// String sql com a consulta a ser executada.
 		String sql = "SELECT id, titulo, tipo, status, lancamento, criador_id FROM album WHERE id = ?";
 		
+		// Try With Resources para garantir que a conexão seja fechada em caso de erro.
 		try (Connection conn = ConnectionFactory.getConexao();
 			 PreparedStatement stmt = conn.prepareStatement(sql))
 		{
 			stmt.setInt(1, id);
 			
+			// Reconstrói o objeto do Album com os dados retornados pelo ResultSet.
 			try (ResultSet rs = stmt.executeQuery()) {
 				if (rs.next()) {
 					Album albumEncontrado = mapearAlbum(conn, rs);
@@ -87,18 +105,24 @@ public class AlbumDAO {
 	/**
 	 * Lista todos os álbuns pertencentes a um criador.
 	 * 
+	 * @param conn Conexão com SQLite fornecida pela ConnectionFactory.
 	 * @param criadorId ID do criador em questão;
 	 * @return Retorna uma lista com todos os álbuns registrados do criador.
 	 */
 	public List <Album> buscarPorCriador(Connection conn, int criadorId) {
+		
+		// String sql com a consulta a ser executada.
 		String sql = "SELECT id, titulo, tipo, status, lancamento, criador_id "
 				+ "FROM album WHERE criador_id = ?";
 		
 		List <Album> albuns = new ArrayList<>();
+		
+		// Tenta a conexão e a consulta.
 		try (PreparedStatement stmt = conn.prepareStatement(sql))
 		{
 			stmt.setInt(1, criadorId);
 			
+			// Preenche a lista de álbuns reconstruídos com os dados do ResultSet.
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					Album a = mapearAlbum(conn, rs);
@@ -119,13 +143,18 @@ public class AlbumDAO {
 	 * @return Retorna a lista de álbuns registrados.
 	 */
 	public List <Album> listarAlbuns() {
+		// String sql com a consulta a ser executada.
 		String sql = "SELECT id, titulo, tipo, status, lancamento, criador_id FROM album";
 		
+		// Lista para guardar os álbuns recuperados.
 		List <Album> albuns = new ArrayList<>();
+		
+		// Tenta a conexão e a consulta.
 		try (Connection conn = ConnectionFactory.getConexao();
 			 PreparedStatement stmt = conn.prepareStatement(sql);
 			 ResultSet rs = stmt.executeQuery())
 		{
+			// Itera pelo ResultSet reconstruindo os objetos com os dados retornados.
 			while (rs.next()) {
 				Album album = mapearAlbum(conn, rs);
 				albuns.add(album);
@@ -147,6 +176,7 @@ public class AlbumDAO {
 	public boolean atualizar(Album albumAtualizado) {
 		if (albumAtualizado == null) return false;
 		
+		// Estabelece a conexão, seguindo o mesmo esquema com o Auto Commit e Rollback anteriores.
 		Connection conn = null;
 		try {
 			conn = ConnectionFactory.getConexao();
@@ -160,6 +190,7 @@ public class AlbumDAO {
 		}
 		catch (SQLException e)
 		{
+			// Tenta o Rollback da transação.
 			System.out.println("Erro ao atualizar álbum, rollback... " + e.getMessage());
 			try {
 				if (conn != null) conn.rollback();
@@ -169,8 +200,14 @@ public class AlbumDAO {
 		}
 		finally
 		{
+			// Habilita o Auto Commit e fecha a conexão.
 			if (conn != null) {
-				try {conn.setAutoCommit(true); conn.close();} catch (SQLException e) {e.printStackTrace();}
+				try {
+					conn.setAutoCommit(true); 
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
@@ -186,6 +223,7 @@ public class AlbumDAO {
 	public boolean deletar(int id) {
 		String sql = "DELETE FROM album WHERE id = ?";
 		
+		// Tenta a conexão com o banco de dados e a deleção.
 		try (Connection conn = ConnectionFactory.getConexao();
 			 PreparedStatement stmt = conn.prepareStatement(sql))
 		{
@@ -210,6 +248,7 @@ public class AlbumDAO {
 		String sql = "INSERT INTO album (titulo, tipo, status, lancamento, criador_id) "
 				+ "VALUES (?,?,?,?,?)";
 		
+		// Tenta a conexão do bbanco de dados e a inserção do álbum.
 		try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
 		{
 			stmt.setString(1, album.getTitulo());
@@ -219,6 +258,7 @@ public class AlbumDAO {
 			stmt.setInt(5, album.getCriadorId());
 			stmt.executeUpdate();
 			
+			// Define o ID do álbum como o ID gerado pela query.
 			try (ResultSet rs = stmt.getGeneratedKeys()) {
 				if (rs.next()) album.setId(rs.getInt(1));
 				else throw new SQLException("Falha ao gerar ID do álbum!");
@@ -237,6 +277,7 @@ public class AlbumDAO {
 		String sql = "UPDATE album SET titulo = ?, tipo = ?, status = ?, lancamento = ?, criador_id = ? " +
 					 "WHERE id = ?";
 		
+		// Tenta a conexão e a atualização do banco de dados.
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			stmt.setString(1, album.getTitulo());
 			stmt.setString(2, album.getTipo());
@@ -256,6 +297,8 @@ public class AlbumDAO {
 	 * @throws SQLException Caso haja um erro de SQL, dispara a exceção.
 	 */
 	private void sincronizarMusicas(Connection conn, Album album) throws SQLException {
+		
+		// Primeiro, retira os IDs dos álbuns associados às músicas.
 		String sqlDesvincular = "UPDATE musica SET album_id = NULL WHERE album_id = ?";
 		try (PreparedStatement stmt = conn.prepareStatement(sqlDesvincular))
 		{
@@ -265,6 +308,7 @@ public class AlbumDAO {
 		
 		if (album.getMusicas() == null || album.getMusicas().isEmpty()) return;
 		
+		// Depois, coloca os novos IDs dos álbuns.
 		String sqlVincular = "UPDATE musica SET album_id = ? WHERE conteudo_id = ?";
 		try (PreparedStatement stmt = conn.prepareStatement(sqlVincular))
 		{
@@ -290,6 +334,7 @@ public class AlbumDAO {
 		{
 			stmt.setInt(1, album.getId());
 			
+			// Itera no ResultSet para preencher as músicas do álbum.
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					int musicaId = rs.getInt("conteudo_id");
@@ -303,6 +348,7 @@ public class AlbumDAO {
 	/**
 	 * Método auxiliar para reconstruir um objeto a partir dos dados das consultas.
 	 * 
+	 * @param conn Conexão com o SQLite fornecida pela ConnectionFactory;
 	 * @param rs ResultSet com os dados retornados pelo SELECT;
 	 * @return Retorna um objeto de Album com os dados provenientes da consulta;
 	 * @throws SQLException Caso haja um erro de SQL, dispara a exceção.
@@ -311,6 +357,7 @@ public class AlbumDAO {
 		Date dataBanco = rs.getDate("lancamento");
 		LocalDate lancamento = (dataBanco != null) ? dataBanco.toLocalDate() : null;
 		
+		// Instancia um novo álbum com os dados do ResultSet.
 		Album albumEncontrado = new Album(
 				rs.getInt("id"),
 				rs.getString("titulo"),

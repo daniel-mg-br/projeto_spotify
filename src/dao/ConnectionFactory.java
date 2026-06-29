@@ -5,16 +5,21 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-// Classe para gerar conexões com o banco de dados para as classes DAO
+/**
+ * Classe ConnectionFactory para gerar conexões com o banco de dados SQLite para as classes DAO.
+ * Padrão de projetos Factory Method, assim não há preocupações em como estabelecer a conexão,
+ * apenas em adquiri-la.
+ */
 public class ConnectionFactory {
+	// Link de acesso ao banco de dados SQLite.
 	private static final String url = "jdbc:sqlite:database.db";
 	
 	public static Connection getConexao() {
 		try {
-			// Cria a conexão com o arquivo SQLite
+			// Cria a conexão com o arquivo SQLite.
 			Connection conn = DriverManager.getConnection(url);
 			
-			// Ativa as chaves estrangeiras e o ON DELETE CASCADE para a conexão
+			// Ativa as chaves estrangeiras e o ON DELETE CASCADE para a conexão.
 			try (Statement stmt = conn.createStatement()){
 				stmt.execute("PRAGMA foreign_keys = ON");
 			}

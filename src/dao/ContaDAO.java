@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import model.actors.Conta;
 
 /**
- *  Classe DAO para manipulação de contas dos usuários (agora com JDBC e SQLite)
+ *  Classe DAO para manipulação de contas dos usuários.
  */
 public class ContaDAO {
 	
@@ -22,15 +22,15 @@ public class ContaDAO {
 			return false;
 		}
 		
-		// String com o comando SQL a ser executado. Os '?' são preenchidos com os valores dos atributos
+		// String com o comando SQL a ser executado. Os '?' são preenchidos com os valores dos atributos.
 		String sql = "INSERT INTO conta (login, senha, plano, status, data_criacao) VALUES (?, ?, ?, ?, ?)";
 		
 		// Tratamento de exceção para a conexão com o banco de dados.
-		// RETURN GENERATED KEYS avisa ao JDBC que o ID que o SQLite vai gerar será usado
+		// RETURN GENERATED KEYS avisa ao JDBC que o ID que o SQLite vai gerar será usado.
 		try (Connection conn = ConnectionFactory.getConexao();
 			 PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
 		{
-			// Preenchendo os '?' com os dados, o primeiro número é a posição do '?'
+			// Preenchendo os '?' com os dados, o primeiro número é a posição do '?'.
 			stmt.setString(1, novaConta.getLogin());
 			stmt.setString(2, novaConta.getSenha());
 			stmt.setString(3, novaConta.getPlano() != null ? novaConta.getPlano() : "Free");
@@ -39,7 +39,7 @@ public class ContaDAO {
 			
 			int linhasAfetadas = stmt.executeUpdate();
 			if (linhasAfetadas > 0) {
-				// Se inseriu com sucesso, o ID gerado é associado ao objeto
+				// Se inseriu com sucesso, o ID gerado é associado ao objeto.
 				try (ResultSet rs = stmt.getGeneratedKeys()) {
 					if (rs.next()) {
 						novaConta.setId(rs.getInt(1));
@@ -64,15 +64,15 @@ public class ContaDAO {
 	public Conta buscarId(int id) {
 		String sql = "SELECT * FROM conta WHERE id = ?";
 		
-		// Execute query é usado para o comando SELECT, retornando um Result Set (uma tabela virtual)
+		// Execute query é usado para o comando SELECT, retornando um Result Set (uma tabela virtual).
 		try (Connection conn = ConnectionFactory.getConexao();
 			 PreparedStatement stmt = conn.prepareStatement(sql))
 		{
 			stmt.setInt(1, id);
 			
 			try (ResultSet rs = stmt.executeQuery()) {
-				// Retorna o objeto Conta em memória usando os dados no banco
-				// Isso sempre que houver uma próxima linha
+				// Retorna o objeto Conta em memória usando os dados no banco.
+				// Isso sempre que houver uma próxima linha.
 				if (rs.next()) return mapearConta(rs);
 			}
 		}
@@ -121,8 +121,8 @@ public class ContaDAO {
 			 PreparedStatement stmt = conn.prepareStatement(sql);
 			 ResultSet rs = stmt.executeQuery())
 		{
-			// O while roda para cada linha que existir na tabela do banco
-			// Assim, ele cria os objetos e armazena na lista de usuários
+			// O while roda para cada linha que existir na tabela do banco.
+			// Assim, ele cria os objetos e armazena na lista de usuários.
 			while (rs.next()) {
 				contas.add(mapearConta(rs));
 			}
@@ -143,7 +143,7 @@ public class ContaDAO {
 	public boolean atualizar(Conta contaAtualizada) {
 		String sql = "UPDATE conta SET login = ?, senha = ?, plano = ?, status = ? WHERE id = ?";
 		
-		// Atualizando os atributos conforme os dados da conta atualizada
+		// Atualizando os atributos conforme os dados da conta atualizada.
 		try (Connection conn = ConnectionFactory.getConexao();
 		     PreparedStatement stmt = conn.prepareStatement(sql))
 		{
@@ -151,9 +151,9 @@ public class ContaDAO {
 			stmt.setString(2, contaAtualizada.getSenha());
 			stmt.setString(3, contaAtualizada.getPlano());
 			stmt.setString(4, contaAtualizada.getStatus());
-			stmt.setInt(5, contaAtualizada.getId()); // O id referente à cláusula WHERE
+			stmt.setInt(5, contaAtualizada.getId()); // O id referente à cláusula WHERE.
 			
-			// execute update retorna a quantidade de linhas alteradas no banco
+			// Execute update retorna a quantidade de linhas alteradas no banco.
 			int linhasAfetadas = stmt.executeUpdate();
 			return linhasAfetadas > 0;
 		}
@@ -176,7 +176,7 @@ public class ContaDAO {
 		try (Connection conn = ConnectionFactory.getConexao();
 			 PreparedStatement stmt = conn.prepareStatement(sql)) 
 		{
-			// Substitui com o id da conta a ser escolhida
+			// Substitui com o id da conta a ser escolhida.
 			stmt.setInt(1, id);
 			int linhasAfetadas = stmt.executeUpdate();
 			return linhasAfetadas > 0;
@@ -189,7 +189,7 @@ public class ContaDAO {
 	}
 	
 	/**
-	 * Método auxiliar para reconstruir um objeto de Conta com os dados retornados pelo SELECT
+	 * Método auxiliar para reconstruir um objeto de Conta com os dados retornados pelo SELECT.
 	 * 
 	 * @param rs Result Set retornado com os dados da conta;
 	 * @return Objeto do tipo Conta com os dados obtidos do SELECT.

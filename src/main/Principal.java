@@ -1,6 +1,6 @@
 package main;
 
-import view.LoginGUI;
+import view.*;
 
 public class Principal {
 

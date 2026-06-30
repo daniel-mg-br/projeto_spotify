@@ -11,8 +11,13 @@ import model.content.Musica;
  * Classe PlaylistDAO para manipulação de playlists do banco.
  */
 public class PlaylistDAO {
+	
+	// MusicaDAO como atributo para manipulação de dados.
 	private MusicaDAO musicaDAO;
 	
+	/**
+	 * Método Construtor instanciando a classe DAO.
+	 */
 	public PlaylistDAO() {
 		this.musicaDAO = new MusicaDAO();
 	}

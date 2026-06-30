@@ -13,13 +13,15 @@ import model.content.Podcast;
  */
 public class OuvinteDAO {
 	
-	// Instanciando o ContaDAO para ajudar a reconstruir o objeto nas buscas
-	// Instanciando os DAOs dos agrupadores para manipulação de dados das relações de conteúdos favoritos.
+	// Classes DAO como atributos para a manipulação dos dados.
 	private ContaDAO contaDAO;
 	private PlaylistDAO playlistDAO;
 	private AlbumDAO albumDAO;
 	private PodcastDAO podcastDAO;
 	
+	/**
+	 * Método Construtor instanciando as classes DAO.
+	 */
 	public OuvinteDAO() {
 		this.contaDAO = new ContaDAO();
 		this.playlistDAO = new PlaylistDAO();
@@ -28,8 +30,7 @@ public class OuvinteDAO {
 	}
 	
 	/**
-	 * Método para salvar um novo usuário juntamente com o novo ouvinte associado.
-	 * Utiliza o método auxiliar para inserção das duas entidades.
+	 * Insere um novo ouvinte (e seu usuário pai) ao banco de dados.
 	 * 
 	 * @param novoOuvinte Objeto do tipo ouvinte contendo os dados a serem inseridos;
 	 * @return Retorna true se a operação foi bem sucessida e false se não.
@@ -37,6 +38,12 @@ public class OuvinteDAO {
 	public boolean salvar(Ouvinte novoOuvinte) {
 		if (novoOuvinte == null || novoOuvinte.getConta() == null) return false;
 		
+		/*
+		 *  Estabelece a conexão JDBC.
+		 *  
+		 *  Atribuindo 'false' ao Auto Commit por segurança, assim o rollback é possível em caso de
+		 *  erros nas operações envolvendo a música e o conteúdo.
+		 */
 		Connection conn = null;
 		try 
 		{
@@ -48,11 +55,13 @@ public class OuvinteDAO {
 			sincronizarAlbunsFavoritos(conn, novoOuvinte);
 			sincronizarPodcastsFavoritos(conn, novoOuvinte);
 			
+			// Se der certo, aplica as mudanças.
 			conn.commit();
 			return true;
 		}
 		catch (SQLException e)
 		{
+			// Se der errado, tenta o Rollback da transação.
 			System.out.println("Erro ao salvar ouvinte. Rollback... " + e.getMessage());
 			
 			try { 
@@ -64,8 +73,14 @@ public class OuvinteDAO {
 		}
 		finally
 		{
+			// Habilita o Auto Commit e fecha a conexão.
 			if (conn != null) {
-				try {conn.setAutoCommit(true); conn.close();} catch(SQLException e) { e.printStackTrace();}
+				try {
+					conn.setAutoCommit(true); 
+					conn.close();
+				} catch(SQLException e) { 
+					e.printStackTrace();
+				}
 			}
 		}
 		return false;
@@ -78,16 +93,20 @@ public class OuvinteDAO {
 	 * @return Objeto do tipo ouvinte contendo os dados requisitados, ou null em caso de falha.
 	 */
 	public Ouvinte buscarId(int id) {
+		
+		// String sql com a consulta a ser executada.
 		String sql = "SELECT u.id, u.nome, u.sexo, u.aniversario, u.conta_id, " +
 							 "o.total_minutos, o.genero_favorito " +
 							 "FROM usuario AS u JOIN ouvinte AS o ON u.id = o.usuario_id " +
 					 		 "WHERE u.id = ?";
 		
+		// Estabelece a conexão e tenta buscar os dados.
 		try (Connection conn = ConnectionFactory.getConexao();
 			 PreparedStatement stmt = conn.prepareStatement(sql))
 		{
 			stmt.setInt(1, id);
 			
+			// Reconstrói o ouvinte com os dados do Result Set.
 			try (ResultSet rs = stmt.executeQuery()) {
 				if (rs.next()) return mapearOuvinte(conn, rs);
 			}
@@ -105,16 +124,21 @@ public class OuvinteDAO {
 	 * @return Uma lista com todos os ouvintes
 	 */
 	public List <Ouvinte> listarOuvintes() {
+		
+		// String sql com a consulta a ser executada.
 		String sql = "SELECT u.id, u.nome, u.sexo, u.aniversario, u.conta_id, " +
 					         "o.total_minutos, o.genero_favorito " +
 					         "FROM usuario AS u JOIN ouvinte AS o ON u.id = o.usuario_id";
 		
+		// Lista para guardar os ouvintes recuperados.
 		List <Ouvinte> ouvintes = new ArrayList<>();
 		
+		// Tenta estabelecer a conexão e realizar a consulta.
 		try (Connection conn = ConnectionFactory.getConexao();
 			 PreparedStatement stmt = conn.prepareStatement(sql);
 		     ResultSet rs = stmt.executeQuery())
 		{
+			// Itera pelo Result Set reconstruindo os ouvintes e preenchendo a lista.
 			while (rs.next()) {
 				ouvintes.add(mapearOuvinte(conn, rs));
 			}
@@ -127,7 +151,7 @@ public class OuvinteDAO {
 	}
 	
 	/**
-	 * Método para atualizar os dados de um usuário e o Ouvinte associado a ele.
+	 * Método para atualizar os dados do ouvinte (e seu usuário pai).
 	 * 
 	 * @param ouvinteAtualizado Objeto do tipo ouvinte com os dados novos;
 	 * @return Retorna true se a atualização foi bem sucedida ou false se não.
@@ -135,6 +159,7 @@ public class OuvinteDAO {
 	public boolean atualizar(Ouvinte ouvinteAtualizado) {
 		if (ouvinteAtualizado == null) return false;
 		
+		// Estabelece a conexão, mantendo o mesmo esquema com o Auto Commit e o Rollback anteriores.
 		Connection conn = null;
 		try 
 		{
@@ -151,6 +176,7 @@ public class OuvinteDAO {
 		}
 		catch (SQLException e)
 		{
+			// Tenta o Rollback da transação.
 			System.out.println("Erro ao atualizar ouvinte. Rollback..." + e.getMessage());
 			
 			try {
@@ -160,9 +186,15 @@ public class OuvinteDAO {
 			}
 		}
 		finally
-		{
+		{	
+			// Habilita o Auto Commit e fecha a conexão.
 			if (conn != null) {
-				try { conn.setAutoCommit(true); conn.close();} catch (SQLException e) {e.printStackTrace();}
+				try { 
+					conn.setAutoCommit(true); 
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return false;
@@ -175,8 +207,11 @@ public class OuvinteDAO {
 	 * @return Retorna true se a operação foi bem sucedida e false se não.
 	 */
 	public boolean deletar(int id) {
+		
+		// String sql com a operação de deleção.
 		String sql = "DELETE FROM usuario WHERE id = ?";
 		
+		// Tenta a conexão e executa a operação.
 		try (Connection conn = ConnectionFactory.getConexao();
 			 PreparedStatement stmt = conn.prepareStatement(sql))
 		{
@@ -190,18 +225,19 @@ public class OuvinteDAO {
 		return false;
 	}
 	
-	// MÉTODOS AUXILIARES PARA MANTEREM O CÓDIGO LIMPO
-	
 	/**
-	 * Método auxiliar para inserir ouvintes na tabela do banco de dados	
+	 * Método auxiliar para inserir um usuário com base nos dados herdados pela classe Ouvinte.	
 	 * 
 	 * @param conn A conexão JDBC com o SQLite fornecida pela ConnectionFactory;
 	 * @param ouvinte Objeto do tipo Ouvinte para manipulação de dados;
 	 * @throws SQLException Em caso de erro de SQL será disparada uma exceção.
 	 */
 	private void inserirUsuario(Connection conn, Ouvinte ouvinte) throws SQLException {
+		
+		// String com a consulta a ser executada.
 		String sql = "INSERT INTO usuario (nome, sexo, aniversario, conta_id) VALUES (?,?,?,?)";
 		
+		// Tenta estabelecer a conexão e inserir o usuário.
 		try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
 		{
 			stmt.setString(1, ouvinte.getNome());
@@ -210,6 +246,7 @@ public class OuvinteDAO {
 			stmt.setInt(4, ouvinte.getConta().getId());
 			stmt.executeUpdate();
 			
+			// O ID do usuário é o ID automático da query.
 			try (ResultSet rs = stmt.getGeneratedKeys())
 			{
 				if (rs.next()) {
@@ -231,6 +268,7 @@ public class OuvinteDAO {
 	private void inserirOuvinte(Connection conn, Ouvinte ouvinte) throws SQLException {
 		String sql = "INSERT INTO ouvinte (usuario_id, total_minutos, genero_favorito) VALUES (?,?,?)";
 		
+		// Tenta estabelecer a conexão e inserir o ouvinte.
 		try (PreparedStatement stmt = conn.prepareStatement(sql))
 		{
 			stmt.setInt(1, ouvinte.getId());
@@ -241,7 +279,7 @@ public class OuvinteDAO {
 	}
 	
 	/**
-	 * Método auxiliar para a a atualização de dados do usuário.
+	 * Método auxiliar para a a atualização do usuário com base nos dados herdados pelo ouvinte.
 	 * 
 	 * @param conn A conexão JDBC com o SQLite fornecida pela ConnectionFactory;
 	 * @param ouvinte Objeto do tipo Ouvinte com os dados novos;
@@ -250,6 +288,7 @@ public class OuvinteDAO {
 	private void modificarUsuario(Connection conn, Ouvinte ouvinte) throws SQLException {
 		String sql = "UPDATE usuario SET nome = ?, sexo = ?, aniversario = ? WHERE id = ?";
 		
+		// Tenta a conexão com o banco de dados e a atualização do usuário.
 		try (PreparedStatement stmt = conn.prepareStatement(sql))
 		{
 			stmt.setString(1, ouvinte.getNome());
@@ -270,6 +309,7 @@ public class OuvinteDAO {
 	private void modificarOuvinte(Connection conn, Ouvinte ouvinte) throws SQLException {
 		String sql = "UPDATE ouvinte SET total_minutos = ?, genero_favorito = ? WHERE usuario_id = ?";
 		
+		// Estabelece a conexão e atualiza o ouvinte.
 		try (PreparedStatement stmt = conn.prepareStatement(sql))
 		{
 			stmt.setInt(1, ouvinte.getTotalMinutos());
@@ -287,6 +327,8 @@ public class OuvinteDAO {
 	 * @throws SQLException Em caso de erro de SQL será disparada uma exceção.
 	 */
 	private void sincronizarAlbunsFavoritos(Connection conn, Ouvinte ouvinte) throws SQLException {
+		
+		// Primeiro, remove a lista antiga de álbuns.
 		String sqlDel = "DELETE FROM ouvinte_album_favorito WHERE ouvinte_id = ?";
 		try (PreparedStatement stmt = conn.prepareStatement(sqlDel)) 
 		{
@@ -296,6 +338,7 @@ public class OuvinteDAO {
 		
 		if (ouvinte.getAlbunsFavoritos() == null || ouvinte.getAlbunsFavoritos().isEmpty()) return;
 		
+		// Depois, insere a lista de álbuns favoritos, incluindo os novos.
 		String sqlIns = "INSERT INTO ouvinte_album_favorito (ouvinte_id, album_id) VALUES (?, ?)";
 		try (PreparedStatement stmt = conn.prepareStatement(sqlIns))
 		{
@@ -319,6 +362,8 @@ public class OuvinteDAO {
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) 
 		{
 			stmt.setInt(1, ouvinte.getId());
+			
+			// Preenche a lista de álbuns favoritos com base nos dados do ResultSet.
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					Album a = albumDAO.buscarId(rs.getInt("album_id"));
@@ -336,6 +381,8 @@ public class OuvinteDAO {
 	 * @throws SQLException Em caso de erro de SQL será disparada uma exceção.
 	 */
 	private void sincronizarPodcastsFavoritos(Connection conn, Ouvinte ouvinte) throws SQLException {
+		
+		// Primeiro, remove a lista antiga de podcasts.
 		String sqlDel = "DELETE FROM ouvinte_podcast_favorito WHERE ouvinte_id = ?";
 		try (PreparedStatement stmt = conn.prepareStatement(sqlDel)) 
 		{
@@ -345,6 +392,7 @@ public class OuvinteDAO {
 		
 		if (ouvinte.getPodcastsFavoritos() == null || ouvinte.getPodcastsFavoritos().isEmpty()) return;
 		
+		// Depois, insere a lista de podcasts favoritos, incluindo os novos.
 		String sqlIns = "INSERT INTO ouvinte_podcast_favorito (ouvinte_id, podcast_id) VALUES (?, ?)";
 		try (PreparedStatement stmt = conn.prepareStatement(sqlIns))
 		{
@@ -368,6 +416,8 @@ public class OuvinteDAO {
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) 
 		{
 			stmt.setInt(1, ouvinte.getId());
+			
+			// Preenche a lista de podcasts a partir dos dados do ResultSet.
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					Podcast p = podcastDAO.buscarId(rs.getInt("podcast_id"));
@@ -380,14 +430,16 @@ public class OuvinteDAO {
 	/**
 	 * Método auxiliar para auxiliar a reconstrução do ouvinte para recuperação de dados.
 	 * 
-	 * @param rs Result Set relacionado ao retorno de linhas da tabela em um SELECT
-	 * @return Objeto do tipo ouvinte, recriado com os dados da tabela
+	 * @param conn Conexão com o SQLite fornecida pela Connection Factory;
+	 * @param rs Result Set relacionado ao retorno de linhas da tabela em um SELECT;
+	 * @return Objeto do tipo ouvinte, recriado com os dados da tabela;
 	 * @throws SQLException	Em caso de erro de SQL será disparada uma exceção.
 	 */
 	private Ouvinte mapearOuvinte(Connection conn, ResultSet rs) throws SQLException {
 		int contaId = rs.getInt("conta_id");
 		Conta conta = contaDAO.buscarId(contaId);
 		
+		// Intancia o ouvinte a partir dos dados do ResultSet.
 		Ouvinte ouvinteEncontrado = new Ouvinte(
 				conta,
 				rs.getInt("id"),
@@ -398,6 +450,7 @@ public class OuvinteDAO {
 				rs.getString("genero_favorito")
 		);
 		
+		// Carrega os dados das playlists, álbuns e podcasts do ouvinte.
 		ouvinteEncontrado.getPlaylists().addAll(playlistDAO.buscarPorUsuario(conn, ouvinteEncontrado.getId()));
 		carregarAlbunsFavoritos(conn, ouvinteEncontrado);
 		carregarPodcastsFavoritos(conn, ouvinteEncontrado);

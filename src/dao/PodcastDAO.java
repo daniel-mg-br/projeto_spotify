@@ -11,8 +11,13 @@ import model.content.Episodio;
  * Classe PodcastDAO para manipulação de podcasts registrados no banco de dados.
  */
 public class PodcastDAO {
+	
+	// EpisodioDAO como atributo para manipulação de dados.
 	EpisodioDAO episodioDAO;
 	
+	/**
+	 * Método Construtor instanciando a DAO.
+	 */
 	public PodcastDAO() {
 		this.episodioDAO = new EpisodioDAO();
 	}

@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import model.actors.Conta;
 
 /**
- *  Classe DAO para manipulação de contas dos usuários.
+ *  Classe ContaDAO para manipulação de contas dos usuários.
  */
 public class ContaDAO {
 	

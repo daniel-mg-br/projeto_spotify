@@ -12,7 +12,12 @@ import model.content.Musica;
  */
 public class AlbumDAO {
 	
+	// ClasseDAO como atributo para manipulação de dados.
 	private MusicaDAO musicaDAO;
+	
+	/**
+	 * Método Construtor instanciando a DAO.
+	 */
 	public AlbumDAO() {
 		this.musicaDAO = new MusicaDAO();
 	}

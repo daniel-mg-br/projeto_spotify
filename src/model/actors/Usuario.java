@@ -8,11 +8,11 @@ import java.time.Period;
 public abstract class Usuario {
 	
 	// Atributos privados do usuário.
-    private Conta conta;
-    private int id;
-    private String nome;
-    private String sexo;
-    private LocalDate aniversario;
+    protected Conta conta;
+    protected int id;
+    protected String nome;
+    protected String sexo;
+    protected LocalDate aniversario;
     
     // Métodos Getter e Setter padrão.
     public Conta getConta() {return this.conta;}

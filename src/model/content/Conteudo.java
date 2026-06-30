@@ -5,9 +5,9 @@ package model.content;
  */
 public abstract class Conteudo {
 	// Atributos privados do Conteúdo,
-    private int id;
-    private String titulo;
-    private int duracaoMin;
+    protected int id;
+    protected String titulo;
+    protected int duracaoMin;
     
     /**
      * Método Construtor padrão para instanciação.

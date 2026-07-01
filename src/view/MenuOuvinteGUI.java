@@ -43,39 +43,108 @@ public class MenuOuvinteGUI extends JFrame {
      * Monta o painel específico para gerenciamento de Playlists.
      */
     private JPanel criarPainelPlaylist() {
-        JPanel panel = new JPanel(new GridLayout(6, 1, 5, 5));
+        // Usar 0 no número de linhas faz o Grid se ajustar dinamicamente à quantidade de itens
+        JPanel panel = new JPanel(new GridLayout(0, 1, 5, 5));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
         JTextField txtIdP = new JTextField(); // Campo para ID da Playlist
         JTextField txtIdM = new JTextField(); // Campo para ID da Música
         
-        // Botão para criar uma nova playlist chamando o controller
-        panel.add(new JButton("Criar Nova Playlist") {{ addActionListener(e -> {
+        // Botão para criar uma nova playlist
+        JButton btnCriar = new JButton("Criar Nova Playlist");
+        btnCriar.addActionListener(e -> {
             String nome = JOptionPane.showInputDialog(this, "Nome da Playlist:");
-            if(nome != null) controller.criarPlaylist(nome, "Descrição");
-        });}});
+            if(nome != null && !nome.trim().isEmpty()) {
+                boolean sucesso = controller.criarPlaylist(nome, "Descrição");
+                if (sucesso) JOptionPane.showMessageDialog(this, "Playlist criada com sucesso!");
+                else JOptionPane.showMessageDialog(this, "Erro ao criar playlist.");
+            }
+        });
+        panel.add(btnCriar);
         
-        panel.add(new JLabel("ID Playlist:")); panel.add(txtIdP);
-        panel.add(new JLabel("ID Música:")); panel.add(txtIdM);
+        // Campos de texto e rótulos
+        panel.add(new JLabel("ID Playlist:")); 
+        panel.add(txtIdP);
+        panel.add(new JLabel("ID Música:")); 
+        panel.add(txtIdM);
         
-        // Painel interno de botões para operações de música em playlist
-        JPanel pBotoes = new JPanel(new GridLayout(1, 2, 5, 5));
-        pBotoes.add(new JButton("Adicionar") {{ addActionListener(e -> 
-            controller.adicionarMusicaPlaylist(Integer.parseInt(txtIdP.getText()), Integer.parseInt(txtIdM.getText()))); }});
-        pBotoes.add(new JButton("Remover") {{ addActionListener(e -> 
-            controller.removerMusicaPlaylist(Integer.parseInt(txtIdP.getText()), Integer.parseInt(txtIdM.getText()))); }});
-        panel.add(pBotoes);
+        // --- 1. Painel de Operações com Músicas (Adicionar / Remover) ---
+        JPanel pBotoesMusica = new JPanel(new GridLayout(1, 2, 5, 5));
         
-        // Ação de compartilhar, usando o ID da playlist capturado no campo txtIdP
-        panel.add(new JButton("Compartilhar/Deletar") {{ addActionListener(e -> {
-            int id = Integer.parseInt(txtIdP.getText());
-            controller.compartilharPlaylist(id);
-            JOptionPane.showMessageDialog(null, "Ação realizada na playlist " + id);
-        });}});
+        JButton btnAdicionar = new JButton("Adicionar Música");
+        btnAdicionar.addActionListener(e -> {
+            try {
+                int idPlaylist = Integer.parseInt(txtIdP.getText());
+                int idMusica = Integer.parseInt(txtIdM.getText());
+                
+                boolean sucesso = controller.adicionarMusicaPlaylist(idPlaylist, idMusica);
+                if(sucesso) JOptionPane.showMessageDialog(this, "Música adicionada com sucesso!");
+                else JOptionPane.showMessageDialog(this, "Erro ao adicionar música.");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Entrada inválida! Digite apenas números nos IDs.");
+            }
+        });
+        
+        JButton btnRemover = new JButton("Remover Música");
+        btnRemover.addActionListener(e -> {
+            try {
+                int idPlaylist = Integer.parseInt(txtIdP.getText());
+                int idMusica = Integer.parseInt(txtIdM.getText());
+                
+                boolean sucesso = controller.removerMusicaPlaylist(idPlaylist, idMusica);
+                if(sucesso) JOptionPane.showMessageDialog(this, "Música removida com sucesso!");
+                else JOptionPane.showMessageDialog(this, "Erro ao remover música.");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Entrada inválida! Digite apenas números nos IDs.");
+            }
+        });
+        
+        pBotoesMusica.add(btnAdicionar);
+        pBotoesMusica.add(btnRemover);
+        panel.add(pBotoesMusica);
+        
+        // --- 2. Painel de Operações com a Playlist (Compartilhar / Deletar) ---
+        JPanel pBotoesPlaylist = new JPanel(new GridLayout(1, 2, 5, 5));
+        
+        JButton btnCompartilhar = new JButton("Compartilhar Playlist");
+        btnCompartilhar.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(txtIdP.getText());
+                
+                boolean sucesso = controller.compartilharPlaylist(id);
+                if(sucesso) JOptionPane.showMessageDialog(this, "Playlist compartilhada com sucesso!");
+                else JOptionPane.showMessageDialog(this, "Erro ao compartilhar playlist.");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Digite um ID de Playlist válido para compartilhar.");
+            }
+        });
+        
+        JButton btnDeletar = new JButton("Deletar Playlist");
+        btnDeletar.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(txtIdP.getText());
+                
+                // Caixa de confirmação antes de apagar os dados do usuário
+                int confirmacao = JOptionPane.showConfirmDialog(this, 
+                        "Tem certeza que deseja deletar a playlist " + id + "?", 
+                        "Confirmação de Exclusão", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                
+                if (confirmacao == JOptionPane.YES_OPTION) {
+                    boolean sucesso = controller.deletarPlaylist(id);
+                    if(sucesso) JOptionPane.showMessageDialog(this, "Playlist deletada com sucesso!");
+                    else JOptionPane.showMessageDialog(this, "Erro ao deletar playlist.");
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Digite um ID de Playlist válido para deletar.");
+            }
+        });
+        
+        pBotoesPlaylist.add(btnCompartilhar);
+        pBotoesPlaylist.add(btnDeletar);
+        panel.add(pBotoesPlaylist);
         
         return panel;
     }
-
     /**
      * Monta o painel para gerenciamento de favoritos (Álbuns).
      */

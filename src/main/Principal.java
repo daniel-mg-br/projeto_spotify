@@ -14,6 +14,6 @@ public class Principal {
     public static void main(String[] args) {
 
         // Cria e exibe a janela de login da aplicação.
-        new MenuOuvinteGUI();
+        new LoginGUI();
     }
 }

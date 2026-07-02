@@ -13,7 +13,11 @@ import model.actors.Criador;
 import model.content.Episodio;
 
 public class PodcastTest {
-	//Testa se o método está criando um podcast corretamente e com os dados corretos
+
+    /**
+     * Verifica se um podcast é criado corretamente com os valores
+     * informados no construtor.
+     */
 	@Test
 	void deveCriarPodcastCorretamente() {
 		
@@ -30,7 +34,11 @@ public class PodcastTest {
 		assertEquals("Podcast sobre saude", novo.getTema());
 		assertEquals(data, novo.getCriacao());
 	}
-	//Testa se o método está adicionando um episódio corretamente
+
+    /**
+     * Verifica se o método adicionarEp() adiciona corretamente
+     * um episódio ao podcast.
+     */
 	@Test
 	void deveAdicionarEpisodioCorretamente() {
 		
@@ -47,7 +55,11 @@ public class PodcastTest {
 		assertTrue(novo.adicionarEp(nov));
 		
 	}
-	//Testa se o método impede que se adicione um episódio null, ou repetido
+	
+    /**
+     * Verifica se o método adicionarEp() impede a adição
+     * de episódios inválidos, como episódios duplicados ou nulos.
+     */
 	@Test
 	void naoDeveAdicionarEpisodioInvalido() {
 		
@@ -67,7 +79,11 @@ public class PodcastTest {
 		assertFalse(novo.adicionarEp(null));
 		
 	}
-	//Testa se o método remove um episódio corretamente
+
+    /**
+     * Verifica se o método removerEp() remove corretamente
+     * um episódio previamente adicionado ao podcast.
+     */
 	@Test
 	void deveRemoverEpisodioCorretamente() {
 				

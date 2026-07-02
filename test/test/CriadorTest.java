@@ -14,7 +14,11 @@ import model.content.Podcast;
 import model.actors.Conta;
 
 public class CriadorTest {
-    // Teste para ver se esta o método está adicionando o álbum com sucesso
+
+    /**
+     * Verifica se o método adicionarAlbum() adiciona um álbum
+     * corretamente à lista de álbuns do criador.
+     */
 	@Test
 	void deveAdicionarAlbum() {
 		
@@ -26,7 +30,11 @@ public class CriadorTest {
 		
 		assertTrue(criador.adicionarAlbum(album));
 	}
-	// Teste para ver se o método está removendo o álbum corretamente
+
+    /**
+     * Verifica se o método removerAlbum() remove corretamente
+     * um álbum previamente adicionado ao criador.
+     */
     @Test
     void deveRemoverAlbum() {
     	
@@ -40,7 +48,11 @@ public class CriadorTest {
     	
     	assertTrue(criador.removerAlbum(album));
     }
-    // Teste para ver se o método está adicionando podcasts com sucesso
+
+    /**
+     * Verifica se o método adicionarPodcast() adiciona um podcast
+     * corretamente à lista de podcasts do criador.
+     */
     @Test
     void deveAdicionarPodcast() {
     	
@@ -53,7 +65,11 @@ public class CriadorTest {
 		assertTrue(criador.adicionarPodcast(podcast));
     	
     }
-    //Testa se o método está removendo podcasts corretamente
+
+    /**
+     * Verifica se o método removerPodcast() remove corretamente
+     * um podcast previamente adicionado ao criador.
+     */
     @Test
     void deveRemoverPodcast() {
     	

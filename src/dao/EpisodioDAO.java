@@ -6,8 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import model.content.Episodio;
 
-/*
- *  Classe EpisodioDAO para manipulação de dados de episódios de podcast.
+
+/**
+ * Classe EpisodioDAO para manipulação de dados de episódios de podcast.
  */
 public class EpisodioDAO {
 	

@@ -34,7 +34,9 @@
 	<li>View: pacote referente à Interface Gráfica do Usuário (GUI), onde estarão localizadas as classes 	com as janelas e painéis, com seus botões e demais elementos. A GUI será implementada por meio da 	biblioteca Swing do Java, com o auxílio do pluggin Window Builder.</li>
 </ul>
 
-<p>A pasta 'media' contém os documentos referentes ao projeto, ou seja: o documento exclusivo para a definição e para os requisitos do projeto; o PNG do diagrama de casos de uso; e o PNG do diagrama de classes. O documento 'trabalho_spotify (1).pdf' também possui os dois diagramas.</p>
+<p>A pasta 'media' contém as imagens PNG dos diagrama de casos de uso e dos diagramas de classes. O documento 'trabalho_spotify_entrega.pdf' também possui os dois diagramas.</p>
+
+<p>A pasta 'docs' contém os documentos referentes ao trabalho, sendo eles: o pdf com as definições, requisitos, funcionalidades e requisitos do projeto; e uma pasta com a documentação javadoc gerada.</p>
 
 <h2>Considerações sobre a organização do código</h2>
 <ul>

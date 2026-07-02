@@ -20,7 +20,7 @@ public class MenuOuvinteGUI extends JFrame {
     private ControllerOuvinte controller;
     private ControllerPerfil controllerPerfil;
 
-    // Componentes visuais que precisam ser atualizados dinamicamente
+    // Componentes visuais que precisam ser atualizados dinamicamente.
     private JComboBox<String> cbMinhasPlaylists;
     private JComboBox<String> cbMusicasDaPlaylist;
     private JComboBox<String> cbTodasMusicas;
@@ -29,6 +29,9 @@ public class MenuOuvinteGUI extends JFrame {
     private JComboBox<String> cbTodosPodcasts;
     private JComboBox<String> cbPodcastsFavoritos;
 
+    /**
+     * Método construtor do menu do ouvinte.
+     */
     public MenuOuvinteGUI() {
         this.controller = new ControllerOuvinte();
         this.controllerPerfil = new ControllerPerfil();
@@ -46,7 +49,7 @@ public class MenuOuvinteGUI extends JFrame {
 
         add(tabbedPane, BorderLayout.CENTER);
         
-        // Rodapé com o botão de Logout
+        // Rodapé com o botão de Logout.
         JPanel painelRodape = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         painelRodape.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY)); 
         JButton btnLogout = new JButton("Sair (Logout)");
@@ -58,7 +61,7 @@ public class MenuOuvinteGUI extends JFrame {
         painelRodape.add(btnLogout);
         add(painelRodape, BorderLayout.SOUTH);
 
-        // Carrega os dados iniciais
+        // Carrega os dados iniciais.
         atualizarListasPlaylists();
         atualizarListasAlbuns();
         atualizarListasPodcasts();
@@ -66,6 +69,12 @@ public class MenuOuvinteGUI extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Méto para extrair apenas o ID de uma string formatada.
+     * 
+     * @param textoCombo String com os dados.
+     * @return Retorna o ID recuperado.
+     */
     private int extrairId(String textoCombo) {
         try {
             return Integer.parseInt(textoCombo.split(" - ")[0]);
@@ -74,15 +83,19 @@ public class MenuOuvinteGUI extends JFrame {
         }
     }
 
-    // ================== PAINEL DE PLAYLISTS ==================
+    /**
+     * Cria o painel para a gestão de playlists e músicas.
+     * 
+     * @return Retorna o JPanel referente à essas opções.
+     */
     private JPanel criarPainelPlaylist() {
-        // O Wrapper (embrulho) trava o formulário no topo (NORTH)
+        // O Wrapper (embrulho) trava o formulário no topo (NORTH).
         JPanel wrapper = new JPanel(new BorderLayout());
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         
-        // 1. Topo: Botão de Criar (Alinhado à esquerda)
+        // Topo: Botão de Criar (Alinhado à esquerda).
         JPanel pTopo = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)); 
         pTopo.setAlignmentX(Component.LEFT_ALIGNMENT);
         JButton btnCriar = new JButton("Criar Nova Playlist");
@@ -96,7 +109,7 @@ public class MenuOuvinteGUI extends JFrame {
         });
         pTopo.add(btnCriar);
         
-        // 2. Meio: Formulário 
+        // Meio: Formulário.
         JPanel pForm = new JPanel(new GridLayout(3, 2, 10, 10));
         pForm.setMaximumSize(new Dimension(Short.MAX_VALUE, 90)); 
         pForm.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -116,9 +129,9 @@ public class MenuOuvinteGUI extends JFrame {
         
         cbMinhasPlaylists.addActionListener(e -> atualizarMusicasDaPlaylistSelecionada());
         
-        // 3. Fundo: Botões (Grid 2x2 para manter as proporções)
+        // Fundo: Botões (Grid 2x2 para manter as proporções).
         JPanel pBotoes = new JPanel(new GridLayout(2, 2, 10, 10));
-        pBotoes.setMaximumSize(new Dimension(400, 70)); // Trava a largura para não ficarem gigantes
+        pBotoes.setMaximumSize(new Dimension(400, 70)); 
         pBotoes.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         JButton btnAddMusica = new JButton("Adicionar Música");
@@ -166,23 +179,26 @@ public class MenuOuvinteGUI extends JFrame {
             }
         });
 
-        // Adiciona na ordem do Grid 2x2
+        // Adiciona na ordem do Grid 2x2.
         pBotoes.add(btnAddMusica);
         pBotoes.add(btnRemoverMusica);
         pBotoes.add(btnCompartilhar);
         pBotoes.add(btnDeletar);
 
-        // Montagem
+        // Montagem.
         panel.add(pTopo);
         panel.add(Box.createVerticalStrut(15));
         panel.add(pForm);
         panel.add(Box.createVerticalStrut(15));
         panel.add(pBotoes);
         
-        wrapper.add(panel, BorderLayout.NORTH); // Fixa no topo
+        wrapper.add(panel, BorderLayout.NORTH); // Fixa no topo.
         return wrapper;
     }
-
+    
+    /**
+     * Atualiza a lista de playlists para seleções futuras.
+     */
     private void atualizarListasPlaylists() {
         cbMinhasPlaylists.removeAllItems();
         for (Playlist p : controller.listarPlaylistsOuvinte()) {
@@ -203,20 +219,24 @@ public class MenuOuvinteGUI extends JFrame {
     private void atualizarMusicasDaPlaylistSelecionada() {
         cbMusicasDaPlaylist.removeAllItems();
         
-        // Se não houver nenhuma playlist selecionada (ou a lista estiver vazia), para por aqui
+        // Se não houver nenhuma playlist selecionada (ou a lista estiver vazia), encerra.
         if (cbMinhasPlaylists.getSelectedItem() == null) {
             return;
         }
         
         int idPlaylist = extrairId(cbMinhasPlaylists.getSelectedItem().toString());
         
-        // Solicita as músicas ao controller e preenche o combo
+        // Solicita as músicas ao controller e preenche o combo.
         for (Musica m : controller.listarMusicasPlaylist(idPlaylist)) {
             cbMusicasDaPlaylist.addItem(m.getId() + " - " + m.getTitulo());
         }
     }
 
-    // ================== PAINEL DE ÁLBUNS ==================
+    /**
+     * Cria o painel para a gestão de álbuns favoritos.
+     * 
+     * @return Retorna o JPanel com as opções em questão.
+     */
     private JPanel criarPainelAlbuns() {
         JPanel wrapper = new JPanel(new BorderLayout());
         JPanel panel = new JPanel();
@@ -234,7 +254,7 @@ public class MenuOuvinteGUI extends JFrame {
         pForm.add(new JLabel("Meus Álbuns Favoritos:")); 
         pForm.add(cbAlbunsFavoritos);
         
-        // Botões enfileirados à esquerda
+        // Grupo de botões para favoritar e desfavoritar álbuns.
         JPanel pBot1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         pBot1.setAlignmentX(Component.LEFT_ALIGNMENT);
         JButton btnFavoritar = new JButton("Favoritar Álbum");
@@ -271,19 +291,23 @@ public class MenuOuvinteGUI extends JFrame {
             JOptionPane.showMessageDialog(panel, "Gênero favorito atualizado com base no seu histórico!");
         });
         pBot3.add(btnGenero);
-
+        
+        // Montagem do painel.
         panel.add(pForm);
         panel.add(Box.createVerticalStrut(15));
         panel.add(pBot1);
-        panel.add(Box.createVerticalStrut(5)); // Espaçamento pequeno entre os botões
+        panel.add(Box.createVerticalStrut(5)); // Espaçamento pequeno entre os botões.
         panel.add(pBot2);
         panel.add(Box.createVerticalStrut(5));
         panel.add(pBot3);
         
-        wrapper.add(panel, BorderLayout.NORTH); // Fixa no topo
+        wrapper.add(panel, BorderLayout.NORTH); // Fixa no topo.
         return wrapper;
     }
-
+    
+    /**
+     * Atualiza a lista de álbuns para consultas futuras.
+     */
     private void atualizarListasAlbuns() {
         cbTodosAlbuns.removeAllItems();
         for (Album a : controller.listarTodosAlbuns()) {
@@ -295,7 +319,11 @@ public class MenuOuvinteGUI extends JFrame {
         }
     }
 
-    // ================== PAINEL DE PODCASTS ==================
+    /**
+     * Cria o painel para a gestão de podcasts favoritos.
+     * 
+     * @return Retorna o JPanel com as opções em questão.
+     */
     private JPanel criarPainelPodcasts() {
         JPanel wrapper = new JPanel(new BorderLayout());
         JPanel panel = new JPanel();
@@ -313,6 +341,7 @@ public class MenuOuvinteGUI extends JFrame {
         pForm.add(new JLabel("Meus Podcasts Favoritos:")); 
         pForm.add(cbPodcastsFavoritos);
         
+        // Grupo de botões para favoritar e desfavoritar podcasts.
         JPanel pBot1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)); 
         pBot1.setAlignmentX(Component.LEFT_ALIGNMENT);
         JButton btnFavoritar = new JButton("Favoritar Podcast");
@@ -340,17 +369,21 @@ public class MenuOuvinteGUI extends JFrame {
             }
         });
         pBot2.add(btnDesfavoritar);
-
+        
+        // Montagem do painel.
         panel.add(pForm);
         panel.add(Box.createVerticalStrut(15));
         panel.add(pBot1);
         panel.add(Box.createVerticalStrut(5));
         panel.add(pBot2);
         
-        wrapper.add(panel, BorderLayout.NORTH); // Fixa no topo
+        wrapper.add(panel, BorderLayout.NORTH); // Fixa no topo.
         return wrapper;
     }
 
+    /**
+     * Atualiza as listas de podcasts para consultas futuras.
+     */
     private void atualizarListasPodcasts() {
         cbTodosPodcasts.removeAllItems();
         for (Podcast p : controller.listarTodosPodcasts()) {
@@ -362,14 +395,18 @@ public class MenuOuvinteGUI extends JFrame {
         }
     }
 
-    // ================== PAINEL DE PERFIL ==================
+    /**
+     * Cria o painel para edição de dados do Ouvinte.
+     * 
+     * @return Retorna o JPanel com tais opções.
+     */
     private JPanel criarPainelPerfil() {
         JPanel wrapper = new JPanel(new BorderLayout());
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // 1. Dados Pessoais
+        // Edição de dados pessoais.
         JPanel pFormDados = new JPanel(new GridLayout(2, 2, 10, 10));
         pFormDados.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
         pFormDados.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -401,7 +438,7 @@ public class MenuOuvinteGUI extends JFrame {
         });
         pBotoesDados.add(btnAttDados);
 
-        // 2. Trocar Senha
+        // Lógica de segurança (Trocar Senha).
         JPanel pFormSenha = new JPanel(new GridLayout(2, 2, 10, 10));
         pFormSenha.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
         pFormSenha.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -435,7 +472,7 @@ public class MenuOuvinteGUI extends JFrame {
         });
         pBotoesSenha.add(btnTrocarSenha);
 
-        // 3. Mudar Plano
+        // Atualização do plano do ouvinte.
         JPanel pFormPlano = new JPanel(new GridLayout(1, 2, 10, 10));
         pFormPlano.setMaximumSize(new Dimension(Short.MAX_VALUE, 30)); 
         pFormPlano.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -457,7 +494,7 @@ public class MenuOuvinteGUI extends JFrame {
         });
         pBotoesPlano.add(btnMudarPlano);
 
-        // Montagem
+        // Montagem do painel.
         panel.add(pFormDados);
         panel.add(Box.createVerticalStrut(10));
         panel.add(pBotoesDados);
@@ -476,7 +513,7 @@ public class MenuOuvinteGUI extends JFrame {
         panel.add(Box.createVerticalStrut(10));
         panel.add(pBotoesPlano);
 
-        wrapper.add(panel, BorderLayout.NORTH); // Fixa no topo
+        wrapper.add(panel, BorderLayout.NORTH); // Fixa no topo.
         return wrapper;
     }
 }

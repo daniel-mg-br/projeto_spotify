@@ -14,7 +14,7 @@ public class CadastroGUI extends JFrame {
     private JPasswordField txtSenha;
     private JTextField txtNome;
     
-    // Transformados em JComboBox para evitar erros de digitação e regras do banco
+    // Transformados em JComboBox para evitar erros de digitação e regras do banco.
     private JComboBox<String> cbSexo;
     private JComboBox<String> cbTipoUsuario;
     
@@ -24,18 +24,21 @@ public class CadastroGUI extends JFrame {
     
     private ControllerAutenticador controller;
 
+    /**
+     * Método construtor da tela de cadastro.
+     */
     public CadastroGUI() {
         this.controller = new ControllerAutenticador();
 
         setTitle("Cadastro de Usuário");
-        setSize(400, 400); // Aumentei um pouco para caber os novos componentes
+        setSize(400, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // Painel do Formulário agora com 8 linhas
+        // Painel do Formulário com 8 linhas.
         JPanel formPanel = new JPanel(new GridLayout(8, 2, 5, 5));
         
         formPanel.add(new JLabel("Login:"));
@@ -50,7 +53,7 @@ public class CadastroGUI extends JFrame {
         txtNome = new JTextField();
         formPanel.add(txtNome);
 
-        // JComboBox para o Sexo (Garante que bate com a restrição do BD)
+        // JComboBox para o Sexo (Garante que bate com a restrição do BD).
         formPanel.add(new JLabel("Sexo:"));
         String[] opcoesSexo = {"M", "F", "Outro", "Prefiro não informar"};
         cbSexo = new JComboBox<>(opcoesSexo);
@@ -66,18 +69,18 @@ public class CadastroGUI extends JFrame {
         dataPanel.add(txtDia);
         formPanel.add(dataPanel);
 
-        // JComboBox para escolher o tipo de conta
+        // JComboBox para escolher o tipo de conta.
         formPanel.add(new JLabel("Tipo de Conta:"));
         String[] tipos = {"Ouvinte", "Criador de Conteúdo"};
         cbTipoUsuario = new JComboBox<>(tipos);
         formPanel.add(cbTipoUsuario);
 
-        // Apenas um botão de cadastro agora
+        // Apenas um botão de cadastro.
         JButton btnCadastrar = new JButton("Cadastrar");
-        formPanel.add(new JLabel("")); // Célula vazia para alinhar o botão à direita
+        formPanel.add(new JLabel("")); // Célula vazia para alinhar o botão à direita.
         formPanel.add(btnCadastrar);
 
-        // Botão Voltar (Logout)
+        // Botão Voltar (Logout).
         JButton btnVoltar = new JButton("Voltar ao Login");
         btnVoltar.addActionListener(e -> {
             dispose();       
@@ -87,7 +90,7 @@ public class CadastroGUI extends JFrame {
         panel.add(formPanel, BorderLayout.CENTER);
         panel.add(btnVoltar, BorderLayout.SOUTH);
 
-        // Único evento de cadastro
+        // Único evento de cadastro.
         btnCadastrar.addActionListener(e -> realizarCadastro());
 
         add(panel);
@@ -105,7 +108,7 @@ public class CadastroGUI extends JFrame {
         String mesStr = txtMes.getText().trim();
         String diaStr = txtDia.getText().trim();
 
-        // 1. Validação de campos vazios
+        //Validação de campos vazios.
         if (login.isEmpty() || senha.isEmpty() || nome.isEmpty() || anoStr.isEmpty() || mesStr.isEmpty() || diaStr.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos!", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
@@ -116,20 +119,20 @@ public class CadastroGUI extends JFrame {
             int mes = Integer.parseInt(mesStr);
             int dia = Integer.parseInt(diaStr);
             
-            // Pegando os valores selecionados nos menus suspensos
+            // Pegando os valores selecionados nos menus suspensos.
             String sexoSelecionado = (String) cbSexo.getSelectedItem();
             String tipoUsuario = (String) cbTipoUsuario.getSelectedItem();
 
             boolean ok = false;
 
-            // 2. Decide qual método do Controller chamar com base na escolha
+            // Decide qual método do Controller chamar com base na escolha.
             if (tipoUsuario.equals("Ouvinte")) {
                 ok = controller.cadastrarOuvinte(login, senha, nome, sexoSelecionado, java.time.LocalDate.of(ano, mes, dia));
             } else {
                 ok = controller.cadastrarCriador(login, senha, nome, sexoSelecionado, java.time.LocalDate.of(ano, mes, dia));
             }
 
-            // 3. Feedback final
+            // Feedback final.
             if (ok) {
                 JOptionPane.showMessageDialog(this, tipoUsuario + " cadastrado com sucesso!");
                 dispose();

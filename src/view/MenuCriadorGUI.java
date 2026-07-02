@@ -25,13 +25,16 @@ public class MenuCriadorGUI extends JFrame {
     private JComboBox<String> cbMinhasMusicas;
     private JComboBox<String> cbMeusPodcasts;
     private JComboBox<String> cbMeusEpisodios;
-
+    
+    /**
+     * Método construtor do menu do criador de conteúdo.
+     */
     public MenuCriadorGUI() {
         this.controller = new ControllerCriador();
         this.controllerPerfil = new ControllerPerfil();
 
         setTitle("Painel do Criador de Conteúdo");
-        setSize(550, 600); // Altura estendida para acomodar bem os formulários
+        setSize(550, 600); // Altura para acomodar os formulários.
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -42,7 +45,7 @@ public class MenuCriadorGUI extends JFrame {
 
         add(tabbedPane, BorderLayout.CENTER);
 
-        // Rodapé com o botão de Logout
+        // Rodapé com o botão de Logout.
         JPanel painelRodape = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         painelRodape.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
         JButton btnLogout = new JButton("Sair (Logout)");
@@ -53,7 +56,7 @@ public class MenuCriadorGUI extends JFrame {
         painelRodape.add(btnLogout);
         add(painelRodape, BorderLayout.SOUTH);
 
-        // Carrega os dados iniciais do banco para as caixas de seleção
+        // Carrega os dados iniciais do banco para as caixas de seleção.
         atualizarListasAlbuns();
         atualizarListasPodcasts();
 
@@ -61,7 +64,10 @@ public class MenuCriadorGUI extends JFrame {
     }
 
     /**
-     * Extrai apenas o número do ID de uma string formatada como "14 - Nome"
+     * Extrai apenas o número do ID de uma string formatada como "14 - Nome".
+     * 
+     * @param textoCombo String com o texto a ser lido;
+     * @return Retorna o id recuperado.
      */
     private int extrairId(String textoCombo) {
         if (textoCombo == null) return -1;
@@ -72,14 +78,18 @@ public class MenuCriadorGUI extends JFrame {
         }
     }
 
-    // ================== PAINEL DE ÁLBUNS E MÚSICAS ==================
+    /**
+     * Cria o painel com o gerenciamento de músicas e álbuns do criador de conteúdo.
+     * 
+     * @return Retorna o JPanel com as informações referentes ás músicas/álbuns.
+     */
     private JPanel criarPainelAlbuns() {
         JPanel wrapper = new JPanel(new BorderLayout());
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // 1. Formulário de Seleção (Grid Alinhado)
+        // Formulário de Seleção (Grid Alinhado).
         JPanel pForm = new JPanel(new GridLayout(2, 2, 10, 10));
         pForm.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
         pForm.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -91,10 +101,10 @@ public class MenuCriadorGUI extends JFrame {
         pForm.add(new JLabel("Músicas deste Álbum:"));
         pForm.add(cbMinhasMusicas);
 
-        // Ouvinte de evento: quando mudar o álbum selecionado, atualiza o combo de músicas automaticamente!
+        // Ouvinte de evento: quando mudar o álbum selecionado, atualiza o combo de músicas automaticamente.
         cbMeusAlbuns.addActionListener(e -> atualizarListasMusicas());
 
-        // 2. Grupo de Botões: Gestão do Álbum
+        // Grupo de Botões: Gestão do Álbum.
         JPanel pBotoesAlbum = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         pBotoesAlbum.setAlignmentX(Component.LEFT_ALIGNMENT);
         JButton btnCriarAlbum = new JButton("Criar Novo Álbum");
@@ -131,7 +141,7 @@ public class MenuCriadorGUI extends JFrame {
         pBotoesAlbum.add(btnLancar); pBotoesAlbum.add(Box.createHorizontalStrut(10));
         pBotoesAlbum.add(btnDeletarAlbum);
 
-        // 3. Grupo de Botões: Gestão de Músicas
+        // Grupo de Botões: Gestão de Músicas.
         JPanel pBotoesMusica = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         pBotoesMusica.setAlignmentX(Component.LEFT_ALIGNMENT);
         JButton btnAddMusica = new JButton("Adicionar Música");
@@ -169,7 +179,7 @@ public class MenuCriadorGUI extends JFrame {
         pBotoesMusica.add(btnAddMusica); pBotoesMusica.add(Box.createHorizontalStrut(10));
         pBotoesMusica.add(btnRemoverMusica);
 
-        // 4. Grupo de Botões: Gestão da Equipe Técnica
+        // Grupo de Botões: Gestão da Equipe Técnica.
         JPanel pBotoesEquipe = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         pBotoesEquipe.setAlignmentX(Component.LEFT_ALIGNMENT);
         JButton btnAddEquipe = new JButton("+ Membro Equipe");
@@ -192,7 +202,7 @@ public class MenuCriadorGUI extends JFrame {
         pBotoesEquipe.add(btnAddEquipe); pBotoesEquipe.add(Box.createHorizontalStrut(10));
         pBotoesEquipe.add(btnRemoverEquipe);
 
-        // Montagem estrutural
+        // Montagem estrutural.
         panel.add(pForm); panel.add(Box.createVerticalStrut(15));
         panel.add(pBotoesAlbum); panel.add(Box.createVerticalStrut(15));
         panel.add(pBotoesMusica); panel.add(Box.createVerticalStrut(15));
@@ -202,6 +212,9 @@ public class MenuCriadorGUI extends JFrame {
         return wrapper;
     }
 
+    /**
+     * Atualiza as listas de álbuns para futuras consultas.
+     */
     private void atualizarListasAlbuns() {
         cbMeusAlbuns.removeAllItems();
         for (Album a : controller.listarAlbunsCriador()) {
@@ -210,6 +223,9 @@ public class MenuCriadorGUI extends JFrame {
         atualizarListasMusicas();
     }
 
+    /**
+     * Atualiza a listas de músicas para futuras consultas.
+     */
     private void atualizarListasMusicas() {
         cbMinhasMusicas.removeAllItems();
         if (cbMeusAlbuns.getSelectedItem() == null) return;
@@ -219,13 +235,18 @@ public class MenuCriadorGUI extends JFrame {
         }
     }
 
-    // ================== PAINEL DE PODCASTS E EPISÓDIOS ==================
+    /**
+     * Cria o painel para a gestão de episódios e podcasts.
+     * 
+     * @return Retorna o JPanel referente à esses conteúdos.
+     */
     private JPanel criarPainelPodcasts() {
         JPanel wrapper = new JPanel(new BorderLayout());
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
+        
+        // Formulário de Seleção (Grid Alinhado).
         JPanel pForm = new JPanel(new GridLayout(2, 2, 10, 10));
         pForm.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
         pForm.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -236,10 +257,11 @@ public class MenuCriadorGUI extends JFrame {
         pForm.add(cbMeusPodcasts);
         pForm.add(new JLabel("Episódios deste Podcast:"));
         pForm.add(cbMeusEpisodios);
-
+        
+     // Ouvinte de evento: quando mudar o álbum selecionado, atualiza o combo de episódios automaticamente.
         cbMeusPodcasts.addActionListener(e -> atualizarListasEpisodios());
 
-        // Botões do Podcast
+        // Grupo de botões do Podcast.
         JPanel pBotoesPod = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         pBotoesPod.setAlignmentX(Component.LEFT_ALIGNMENT);
         JButton btnCriarPod = new JButton("Criar Novo Podcast");
@@ -265,7 +287,7 @@ public class MenuCriadorGUI extends JFrame {
         pBotoesPod.add(btnCriarPod); pBotoesPod.add(Box.createHorizontalStrut(10));
         pBotoesPod.add(btnDeletarPod);
 
-        // Botões do Episódio
+        // Grupo de botões do Episódio.
         JPanel pBotoesEp = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         pBotoesEp.setAlignmentX(Component.LEFT_ALIGNMENT);
         JButton btnAddEp = new JButton("Adicionar Episódio");
@@ -302,7 +324,7 @@ public class MenuCriadorGUI extends JFrame {
         pBotoesEp.add(btnAddEp); pBotoesEp.add(Box.createHorizontalStrut(10));
         pBotoesEp.add(btnRemoverEp);
 
-        // Botões de Convidados
+        // Grupo de botões para os convidados do episódio.
         JPanel pBotoesConv = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         pBotoesConv.setAlignmentX(Component.LEFT_ALIGNMENT);
         JButton btnAddConv = new JButton("+ Adicionar Convidado");
@@ -333,7 +355,10 @@ public class MenuCriadorGUI extends JFrame {
         wrapper.add(panel, BorderLayout.NORTH);
         return wrapper;
     }
-
+    
+    /**
+     * Atualiza a lista de podcasts para consultas futuras.
+     */
     private void atualizarListasPodcasts() {
         cbMeusPodcasts.removeAllItems();
         for (Podcast p : controller.listarPodcastCriador()) {
@@ -341,7 +366,10 @@ public class MenuCriadorGUI extends JFrame {
         }
         atualizarListasEpisodios();
     }
-
+    
+    /**
+     * Atualiza a lista de episódios de podcasts para consultas futuras.
+     */
     private void atualizarListasEpisodios() {
         cbMeusEpisodios.removeAllItems();
         if (cbMeusPodcasts.getSelectedItem() == null) return;
@@ -351,14 +379,18 @@ public class MenuCriadorGUI extends JFrame {
         }
     }
 
-    // ================== PAINEL DE PERFIL DO CRIADOR ==================
+    /**
+     * Cria o painel para a gestão de dados de perfil.
+     * 
+     * @return Retorna o JPanel com as opções de edição.
+     */
     private JPanel criarPainelPerfil() {
         JPanel wrapper = new JPanel(new BorderLayout());
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // 1. Dados Pessoais de Conta
+        // Dados pessoais básicos de Conta.
         JPanel pFormDados = new JPanel(new GridLayout(2, 2, 10, 10));
         pFormDados.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
         pFormDados.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -378,12 +410,12 @@ public class MenuCriadorGUI extends JFrame {
         });
         pBotDados.add(btnSalvarDados);
 
-        // 2. Perfil Artístico Específico do Criador
+        // Perfil artístico específico do Criador.
         JPanel pFormArtista = new JPanel(new GridLayout(2, 2, 10, 10));
         pFormArtista.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
         pFormArtista.setAlignmentX(Component.LEFT_ALIGNMENT);
         JTextField txtNomeArtistico = new JTextField();
-        JTextField txtBiografia = new JTextField(); // Linha curta para a bio na interface resumida
+        JTextField txtBiografia = new JTextField(); // Linha curta para a bio na interface resumida.
         pFormArtista.add(new JLabel("Nome Artístico:")); pFormArtista.add(txtNomeArtistico);
         pFormArtista.add(new JLabel("Biografia:")); pFormArtista.add(txtBiografia);
 
@@ -399,7 +431,7 @@ public class MenuCriadorGUI extends JFrame {
         });
         pBotArtista.add(btnSalvarArtista);
 
-        // 3. Segurança (Trocar Senha)
+        // Lógica de segurança (Trocar Senha).
         JPanel pFormSenha = new JPanel(new GridLayout(2, 2, 10, 10));
         pFormSenha.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
         pFormSenha.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -419,7 +451,7 @@ public class MenuCriadorGUI extends JFrame {
         });
         pBotSenha.add(btnSenha);
 
-        // Agrupamento com os separadores JSeparator
+        // Agrupamento com os separadores JSeparator.
         panel.add(pFormDados); panel.add(Box.createVerticalStrut(10));
         panel.add(pBotDados); panel.add(Box.createVerticalStrut(15));
         panel.add(new JSeparator()); panel.add(Box.createVerticalStrut(15));

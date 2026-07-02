@@ -8,7 +8,7 @@ import model.actors.*;
 import model.content.*;
 
 /**
- * Classe Controller para as responsabilidades do Administrador do sistema.
+ * Classe ControllerAdmin para as responsabilidades do Administrador do sistema.
  */
 public class ControllerAdmin {
 	// Objetos DAO como atributos para manipulação de dados.

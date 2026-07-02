@@ -7,7 +7,8 @@ import java.util.List;
 import model.content.Album;
 import model.content.Musica;
 
-/*
+
+/**
  * Classe AlbumDAO para manipulação de dados dos álbuns do banco.
  */
 public class AlbumDAO {

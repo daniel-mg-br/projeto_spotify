@@ -16,11 +16,11 @@ import java.awt.*;
  */
 public class LoginGUI extends JFrame {
 
-    // Campos de entrada do login
+    // Campos de entrada do login.
     private JTextField txtLogin;
     private JPasswordField txtSenha;
 
-    // Controller responsável pela autenticação
+    // Controller responsável pela autenticação.
     private ControllerAutenticador controller;
 
     /**
@@ -29,47 +29,47 @@ public class LoginGUI extends JFrame {
      */
     public LoginGUI() {
 
-        // Inicializa o controller de autenticação
+        // Inicializa o controller de autenticação.
         controller = new ControllerAutenticador();
 
-        // Configuração da janela
+        // Configuração da janela.
         setTitle("Login");
         setSize(300, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Centraliza a janela
+        setLocationRelativeTo(null); // Centraliza a janela.
 
-        // Painel principal com layout em grade
+        // Painel principal com layout em grade.
         JPanel panel = new JPanel(new GridLayout(3, 2, 5, 5));
 
-        // Campo de login
+        // Campo de login.
         panel.add(new JLabel("Login:"));
         txtLogin = new JTextField();
         panel.add(txtLogin);
 
-        // Campo de senha
+        // Campo de senha.
         panel.add(new JLabel("Senha:"));
         txtSenha = new JPasswordField();
         panel.add(txtSenha);
 
-        // Botão de login
+        // Botão de login.
         JButton btnLogin = new JButton("Entrar");
 
-        // Botão para abrir tela de cadastro
+        // Botão para abrir tela de cadastro.
         JButton btnCadastro = new JButton("Cadastrar");
 
         panel.add(btnLogin);
         panel.add(btnCadastro);
 
-        // Evento de login
+        // Evento de login.
         btnLogin.addActionListener(e -> fazerLogin());
 
-        // Evento para abrir cadastro
+        // Evento para abrir cadastro.
         btnCadastro.addActionListener(e -> abrirCadastro());
 
-        // Adiciona painel à janela
+        // Adiciona painel à janela.
         add(panel);
 
-        // Torna a janela visível
+        // Torna a janela visível.
         setVisible(true);
     }
 
@@ -79,7 +79,7 @@ public class LoginGUI extends JFrame {
      */
     private void fazerLogin() {
 
-        // Captura credenciais digitadas
+        // Captura credenciais digitadas.
         String login = txtLogin.getText();
         String senha = new String(txtSenha.getPassword());
 
@@ -88,19 +88,19 @@ public class LoginGUI extends JFrame {
             return;
         }
         
-        // Autenticação via controller
+        // Autenticação via controller.
         Usuario u = controller.login(login, senha);
 
-        // Verificação de login inválido
+        // Verificação de login inválido.
         if (u == null) {
             JOptionPane.showMessageDialog(this, "Login inválido!");
             return;
         }
 
-        // Fecha tela de login
+        // Fecha tela de login.
         dispose();
 
-        // Redireciona conforme o tipo de usuário (polimorfismo)
+        // Redireciona conforme o tipo de usuário (polimorfismo).
         if (u instanceof Administrador) {
             new MenuAdminGUI();
         } else if (u instanceof Criador) {

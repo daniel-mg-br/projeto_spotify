@@ -20,22 +20,25 @@ public class MenuAdminGUI extends JFrame {
     private ControllerAdmin controller;
     private ControllerPerfil controllerPerfil;
 
-    // Componentes visuais dinâmicos para as listagens
+    // Componentes visuais dinâmicos para as listagens.
     private JComboBox<String> cbOuvintes;
     private JComboBox<String> cbCriadores;
     private JComboBox<String> cbMusicas;
     private JComboBox<String> cbEpisodios;
 
+    /**
+     * Método Construtor do menu do administrador.
+     */
     public MenuAdminGUI() {
         this.controller = new ControllerAdmin();
         this.controllerPerfil = new ControllerPerfil();
 
         setTitle("Painel do Administrador (Moderação)");
-        setSize(550, 500); // Tamanho padronizado para as abas
+        setSize(550, 500); // Tamanho padronizado para as abas.
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); 
 
-        // Sistema de Abas
+        // Sistema de Abas.
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Moderação de Usuários", criarPainelUsuarios());
         tabbedPane.addTab("Moderação de Conteúdos", criarPainelConteudos());
@@ -43,7 +46,7 @@ public class MenuAdminGUI extends JFrame {
 
         add(tabbedPane, BorderLayout.CENTER);
 
-        // Rodapé com o botão de Logout seguro
+        // Rodapé com o botão de Logout seguro.
         JPanel painelRodape = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         painelRodape.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
         JButton btnLogout = new JButton("Sair (Logout)");
@@ -55,7 +58,7 @@ public class MenuAdminGUI extends JFrame {
         painelRodape.add(btnLogout);
         add(painelRodape, BorderLayout.SOUTH);
 
-        // Carrega os dados nas caixinhas assim que a tela abre
+        // Carrega os dados nas caixas assim que a tela abre.
         atualizarListasUsuarios();
         atualizarListasConteudos();
 
@@ -63,7 +66,10 @@ public class MenuAdminGUI extends JFrame {
     }
 
     /**
-     * Extrai apenas o número do ID de uma string formatada como "14 - Nome"
+     * Extrai apenas o número do ID de uma string formatada como "14 - Nome".
+     * 
+     * @param textoCombo String com as informações;
+     * @return Retorna o ID recuperado.
      */
     private int extrairId(String textoCombo) {
         if (textoCombo == null) return -1;
@@ -74,14 +80,18 @@ public class MenuAdminGUI extends JFrame {
         }
     }
 
-    // ================== PAINEL DE USUÁRIOS ==================
+   /**
+    * Método para construir a tela onde o administrador seleciona usuários para suspender.
+    * 
+    * @return Retorna o JPanel com a tela de suspensão de usuários.
+    */
     private JPanel criarPainelUsuarios() {
         JPanel wrapper = new JPanel(new BorderLayout());
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Formulário de Seleção (Grid 2x2)
+        // Formulário de Seleção (Grid 2x2).
         JPanel pForm = new JPanel(new GridLayout(2, 2, 10, 10));
         pForm.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
         pForm.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -93,7 +103,7 @@ public class MenuAdminGUI extends JFrame {
         pForm.add(new JLabel("Selecione um Criador:"));
         pForm.add(cbCriadores);
 
-        // Botões de Ação
+        // Botões de Ação.
         JPanel pBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         pBotoes.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -107,7 +117,7 @@ public class MenuAdminGUI extends JFrame {
         pBotoes.add(Box.createHorizontalStrut(10));
         pBotoes.add(btnSuspenderCriador);
 
-        // Montagem
+        // Montagem.
         panel.add(pForm);
         panel.add(Box.createVerticalStrut(15));
         panel.add(pBotoes);
@@ -127,13 +137,16 @@ public class MenuAdminGUI extends JFrame {
         if (conf == JOptionPane.YES_OPTION) {
             if (controller.suspenderUsuario(id)) {
                 JOptionPane.showMessageDialog(this, "Conta suspensa com sucesso!");
-                // Não precisa atualizar a lista visualmente, pois a conta continua existindo, apenas o status muda para "Suspenso"
+                // Não precisa atualizar a lista visualmente, pois a conta continua existindo, apenas o status muda para "Suspenso".
             } else {
                 JOptionPane.showMessageDialog(this, "Erro ao tentar suspender usuário.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
+    /**
+     * Atualiza a lista de usuários para futuras seleções.
+     */
     private void atualizarListasUsuarios() {
         cbOuvintes.removeAllItems();
         for (Ouvinte o : controller.listarTodosOuvintes()) {
@@ -146,14 +159,18 @@ public class MenuAdminGUI extends JFrame {
         }
     }
 
-    // ================== PAINEL DE CONTEÚDOS ==================
+    /**
+     * Método para construir o painel onde o administrador escolhe conteúdos para banir.
+     * 
+     * @return Retorna o JPanel referente ao painel de conteúdos.
+     */
     private JPanel criarPainelConteudos() {
         JPanel wrapper = new JPanel(new BorderLayout());
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Formulário de Seleção (Grid 2x2)
+        // Formulário de Seleção (Grid 2x2).
         JPanel pForm = new JPanel(new GridLayout(2, 2, 10, 10));
         pForm.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
         pForm.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -165,7 +182,7 @@ public class MenuAdminGUI extends JFrame {
         pForm.add(new JLabel("Episódios de Podcast:"));
         pForm.add(cbEpisodios);
 
-        // Botões de Ação
+        // Botões de Ação.
         JPanel pBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         pBotoes.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -179,7 +196,7 @@ public class MenuAdminGUI extends JFrame {
         pBotoes.add(Box.createHorizontalStrut(10));
         pBotoes.add(btnRemoverEpisodio);
 
-        // Montagem
+        // Montagem.
         panel.add(pForm);
         panel.add(Box.createVerticalStrut(15));
         panel.add(pBotoes);
@@ -199,13 +216,16 @@ public class MenuAdminGUI extends JFrame {
         if (conf == JOptionPane.YES_OPTION) {
             if (controller.removerConteudo(id)) {
                 JOptionPane.showMessageDialog(this, "Conteúdo excluído com sucesso da base de dados!");
-                atualizarListasConteudos(); // Recarrega as listas
+                atualizarListasConteudos(); // Recarrega as listas.
             } else {
                 JOptionPane.showMessageDialog(this, "Erro ao remover conteúdo.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
+    /**
+     * Atualiza as listas de conteúdos para seleções futuras.
+     */
     private void atualizarListasConteudos() {
         cbMusicas.removeAllItems();
         for (Musica m : controller.listarTodasMusicas()) {
@@ -218,14 +238,18 @@ public class MenuAdminGUI extends JFrame {
         }
     }
 
-    // ================== PAINEL DE PERFIL (ADMIN) ==================
+    /**
+     * Cria o painel para alteração de dados do perfil.
+     * 
+     * @return Retorna o JPanel referente à edição de perfil.
+     */
     private JPanel criarPainelPerfil() {
         JPanel wrapper = new JPanel(new BorderLayout());
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // 1. Dados Básicos
+        // Seção para edição de dados Básicos.
         JPanel pFormDados = new JPanel(new GridLayout(2, 2, 10, 10));
         pFormDados.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
         pFormDados.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -246,7 +270,7 @@ public class MenuAdminGUI extends JFrame {
         });
         pBotDados.add(btnAttDados);
 
-        // 2. Segurança (Trocar Senha)
+        // Lógicas de segurança para alteração de senha.
         JPanel pFormSenha = new JPanel(new GridLayout(2, 2, 10, 10));
         pFormSenha.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
         pFormSenha.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -269,7 +293,7 @@ public class MenuAdminGUI extends JFrame {
         });
         pBotSenha.add(btnTrocarSenha);
 
-        // 3. Credencial Master
+        // Edição de credencial.
         JPanel pFormCred = new JPanel(new GridLayout(1, 2, 10, 10));
         pFormCred.setMaximumSize(new Dimension(Short.MAX_VALUE, 30));
         pFormCred.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -289,7 +313,7 @@ public class MenuAdminGUI extends JFrame {
         });
         pBotCred.add(btnAttCred);
 
-        // Montagem do painel com separadores
+        // Montagem do painel com separadores.
         panel.add(pFormDados); panel.add(Box.createVerticalStrut(10));
         panel.add(pBotDados); panel.add(Box.createVerticalStrut(15));
         panel.add(new JSeparator()); panel.add(Box.createVerticalStrut(15));

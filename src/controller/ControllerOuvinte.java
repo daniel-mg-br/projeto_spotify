@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Classe Controller referente à interação do Ouvinte com o sistema.
+ * Classe ControllerOuvinte referente à interação do Ouvinte com o sistema.
  */
 public class ControllerOuvinte {
 	// Classes DAO como atributos, responsáveis pela manipulção de dados

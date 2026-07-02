@@ -3,8 +3,9 @@ package controller;
 import dao.*;   
 import model.actors.*;
 
-/*
- * Classe Controller para alteração de dados envolvendo a Conta e o Usuário.
+
+/**
+ * Classe ControllerPerfil para alteração de dados envolvendo a Conta e o Usuário.
  */
 public class ControllerPerfil {
 	// Classes DAO como atributos para manipulação de dados.

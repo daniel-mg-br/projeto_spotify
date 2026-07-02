@@ -7,8 +7,9 @@ import dao.*;
 import model.actors.*;
 import model.content.*;
 
-/*
- * Classe Controller para as responsabilidades do criador de conteúdo.
+
+/**
+ * Classe ControllerCriador para as responsabilidades do criador de conteúdo.
  */
 public class ControllerCriador {
 	// Objetos DAO como atributos para a manipulação de dados.

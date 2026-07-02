@@ -7,7 +7,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import model.content.Musica;
 
 public class MusicaTest {
-	//Testa se o método está criando música corretamente
+
+    /**
+     * Verifica se uma música é criada corretamente com os valores
+     * informados no construtor.
+     */
 	@Test
 	void deveCriarMusicaCorretamente() {
 		
@@ -19,7 +23,11 @@ public class MusicaTest {
 		assertEquals("Sertanejo", nova.getGenero());
 		assertEquals("Quanto tempo o coracao...", nova.getLetra());
 	}
-	//Testa se o método está adicionando um membro a equipe corretamente
+
+    /**
+     * Verifica se o método adicionarMembroEquipe() adiciona
+     * corretamente um novo membro à equipe da música.
+     */
 	@Test
 	void deveAdicionarMembroNaEquipe() {
 		
@@ -28,7 +36,11 @@ public class MusicaTest {
 		assertTrue(nova.adicionarMembroEquipe("Chitaozinho"));	
 		
 	}
-	//Testa se o método impede que se adicione um membro null ou repitido
+
+    /**
+     * Verifica se o método adicionarMembroEquipe() impede a adição
+     * de membros inválidos, como nomes repetidos ou valores nulos.
+     */
 	@Test
 	void naoDeveAdicionarMebroInvalido() {
 		
@@ -41,7 +53,11 @@ public class MusicaTest {
 		assertFalse(nova.adicionarMembroEquipe(null));
 			
 	}
-	//Testa se o método remove um membro corretamente
+
+    /**
+     * Verifica se o método removerMembroEquipe() remove corretamente
+     * um membro previamente adicionado à equipe da música.
+     */
 	@Test
 	void deveRemoverMembro() {
 		

@@ -12,7 +12,10 @@ import model.actors.Criador;
 
 public class UsuarioTest {
 
-	//Deve testar se o método está criando usuário corretamente
+    /**
+     * Verifica se um usuário é criado corretamente com os valores
+     * informados no construtor.
+     */
 	@Test
 	void deveCriarUsuarioCorretamente() {
 		
@@ -27,7 +30,12 @@ public class UsuarioTest {
 		assertEquals(aniversario, usuario.getAniversario());
 		
 	}
-	//Deve testar se o nome é alterado corretamente
+
+
+    /**
+     * Verifica se o método alterarNome() altera corretamente
+     * o nome do usuário.
+     */
 	@Test
 	void deveAlterarNome() {
 		
@@ -40,7 +48,11 @@ public class UsuarioTest {
 		assertTrue(usuario.alterarNome("Jhey"));
 		
 	}
-	//Este teste deve calcular a idade corretamente com base na data de nascimento
+
+    /**
+     * Verifica se o método calcularIdade() retorna corretamente
+     * a idade do usuário com base em sua data de nascimento.
+     */
 	@Test
 	void deveCalcularIdadeCorretamente() {
 		
@@ -52,7 +64,11 @@ public class UsuarioTest {
 		
 		assertEquals(20, usuario.calcularIdade());
 	}
-	//Este teste deve testar se o sexo é alterado corretamente
+
+    /**
+     * Verifica se o método alterarSexo() altera corretamente
+     * o sexo do usuário.
+     */
 	@Test
 	void deveAlterarSexo() {
 		

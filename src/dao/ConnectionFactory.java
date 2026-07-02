@@ -12,7 +12,7 @@ import java.sql.SQLException;
  */
 public class ConnectionFactory {
 	// Link de acesso ao banco de dados SQLite.
-	private static final String url = "jdbc:sqlite:database.db";
+	private static final String url = "jdbc:sqlite:projeto_spotifyDB.db";
 	
 	public static Connection getConexao() {
 		try {

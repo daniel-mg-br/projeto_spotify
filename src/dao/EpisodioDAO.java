@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList; 
 import java.util.List;
 import model.content.Episodio;
@@ -352,12 +353,30 @@ public class EpisodioDAO {
 	 * @throws SQLException Caso haja erro de SQL, dispara uma exceção.
 	 */
 	private Episodio mapearEpisodio(Connection conn, ResultSet rs) throws SQLException {
+		String dataTexto = rs.getString("lancamento");
+		LocalDate lancamento = 	null;
+		
+		// Lógica para converter o texto com a data no banco de dados para um LocalDate.
+		if (dataTexto != null && !dataTexto.isEmpty()) {
+			if (dataTexto.contains("-")) {
+				lancamento = LocalDate.parse(dataTexto.substring(0, 10));
+			} else {
+				try {
+					long timestamp = Long.parseLong(dataTexto);
+					lancamento = new java.sql.Date(timestamp).toLocalDate();
+				} catch (Exception e) {
+					lancamento = LocalDate.now();
+				}
+			}
+		}
+		
+		// Instancia o episódio com os dados do ResultSet.
 		Episodio epEncontrado = new Episodio(
 				rs.getInt("id"),
 				rs.getString("titulo"),
 				rs.getInt("duracao_min"),
 				rs.getInt("num_episodio"),
-				rs.getDate("lancamento").toLocalDate()
+				lancamento
 		);
 		
 		carregarConvidados(conn, epEncontrado);

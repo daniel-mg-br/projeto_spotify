@@ -1,5 +1,8 @@
 package controller;
 
+import java.util.ArrayList; 
+import java.util.List;
+
 import dao.*;   
 import model.actors.*;
 import model.content.*;
@@ -161,11 +164,6 @@ public class ControllerCriador {
     	// Verificação de objetos nulos e se o álbum pertence ao criador.
     	if (criador == null || album == null || album.getCriadorId() != criador.getId()) return false;
     	
-    	// Deleta remove as músicas do álbum, atualizando o banco de dados.
-    	for (Musica faixa : album.getMusicas()) {
-    		this.musicaDAO.deletar(faixa.getId());
-    	}
-    	
     	// Atualiza a tabela de álbuns removendo o álbum.
     	criador.removerAlbum(album);
     	this.albumDAO.deletar(idAlbum);
@@ -274,16 +272,193 @@ public class ControllerCriador {
     	// Verificação de classes nulas e se o podcast pertence ao criador.
     	if (criador == null || podcast == null || podcast.getCriadorId() != criador.getId()) return false;
     	
-    	// Remove os episódios do podcast e atualiza o banco de dados.
-    	for (Episodio ep : podcast.getEpisodios()) {
-    		this.episodioDAO.deletar(ep.getId());
-    	}
-    	
     	// Atualiza a tabela de podcasts removendo o podcast.
     	criador.removerPodcast(podcast);
     	this.podcastDAO.deletar(idPodcast);
     	
     	System.out.println("Podcasts e seus episódios removidos!");
     	return true;
+    }
+    
+    /**
+     * Recupera os dados dos álbuns que pertencem estritamente ao criador logado.
+     * 
+     * @return Retorna a lista de álbuns recuperados.
+     */
+    public List<Album> listarAlbunsCriador() {
+        Criador criador = this.getCriadorLogado();
+        if (criador == null) return new ArrayList<>();
+        return criador.getDiscografia();
+    }
+
+    /**
+     * Recupera os dados dos podcasts que pertencem estritamente ao criador logado.
+     * 
+     * @return Retorna a lista de podcasts recuperados.
+     */
+    public List<Podcast> listarPodcastCriador() {
+        Criador criador = this.getCriadorLogado();
+        if (criador == null) return new ArrayList<>();
+        return criador.getPodcasts();
+    }
+    
+    /**
+     * Recupera os dados das músicas de um álbum específico do criador.
+     * 
+     * @param idAlbum ID do álbum a ser consultado;
+     * @return Retorna a lista de músicas recuperadas.
+     */
+    public List<Musica> listarMusicasAlbum(int idAlbum) {
+        Criador criador = this.getCriadorLogado();
+        Album album = this.albumDAO.buscarId(idAlbum);
+        
+        // Segurança: Garante que o álbum existe e pertence ao criador logado
+        if (criador == null || album == null || album.getCriadorId() != criador.getId()) {
+            return new ArrayList<>();
+        }
+        
+        return album.getMusicas();
+    }
+    
+    /**
+     * Recupera os dados dos episódios de um podcast específico do criador.
+     * 
+     * @param idPodcast ID do podcast a ser consultado;
+     * @return Retorna a lista de episódios recuperados;
+     */
+    public List<Episodio> listarEpisodiosPodcast(int idPodcast) {
+        Criador criador = this.getCriadorLogado();
+        Podcast podcast = this.podcastDAO.buscarId(idPodcast);
+        
+        // Segurança: Garante que o podcast existe e pertence ao criador logado
+        if (criador == null || podcast == null || podcast.getCriadorId() != criador.getId()) {
+            return new ArrayList<>();
+        }
+        
+        return podcast.getEpisodios();
+    }
+    
+    /**
+     * Adiciona um convidado ao episódio de podcast.
+     * 
+     * @param idEpisodio ID do episódio em questão;
+     * @param nomeConvidado Nome do convidado a ser adicionado;
+     * @return Retorna true se a operação for bem sucedida, e false se não.
+     */
+    public boolean adicionarConvidadoEpisodio(int idEpisodio, String nomeConvidado) {
+        Criador criador = this.getCriadorLogado();
+        Episodio episodio = this.episodioDAO.buscarId(idEpisodio);
+        
+        if (criador == null || episodio == null || nomeConvidado == null || nomeConvidado.trim().isEmpty()) return false;
+        
+        // Segurança: Verifica se o episódio pertence a algum podcast deste criador
+        boolean pertenceAoCriador = criador.getPodcasts().stream()
+            .anyMatch(podcast -> podcast.getEpisodios().stream().anyMatch(ep -> ep.getId() == idEpisodio)); // [cite: 18]
+            
+        if (!pertenceAoCriador) {
+            System.out.println("Erro: Acesso negado! Este episódio não pertence a você.");
+            return false;
+        }
+        
+        boolean adicionou = episodio.adicionarConvidado(nomeConvidado);
+        if (adicionou) {
+            this.episodioDAO.atualizar(episodio); // Sincroniza com o banco
+            System.out.println("Convidado adicionado ao episódio com sucesso!");
+            return true;
+        }
+        
+        System.out.println("Erro: Convidado já registrado neste episódio!");
+        return false;
+    }
+    
+    /**
+     * Remove um convidado de um episódio de podcast;
+     * 
+     * @param idEpisodio ID do episódio em questão;
+     * @param nomeConvidado Nome do convidado a ser removido;
+     * @return Retorna true se a operação for bem sucedida, e false se não.
+     */
+    public boolean removerConvidadoEpisodio(int idEpisodio, String nomeConvidado) {
+        Criador criador = this.getCriadorLogado();
+        Episodio episodio = this.episodioDAO.buscarId(idEpisodio);
+        
+        if (criador == null || episodio == null) return false;
+        
+        boolean pertenceAoCriador = criador.getPodcasts().stream()
+            .anyMatch(podcast -> podcast.getEpisodios().stream().anyMatch(ep -> ep.getId() == idEpisodio));
+            
+        if (!pertenceAoCriador) return false;
+        
+        boolean removeu = episodio.removerConvidado(nomeConvidado);
+        if (removeu) {
+            this.episodioDAO.atualizar(episodio);
+            System.out.println("Convidado removido do episódio!");
+            return true;
+        }
+        
+        System.out.println("Erro: Convidado não encontrado no episódio.");
+        return false;
+    }
+    
+    /**
+     * Adiciona um membro à equipe da música.
+     * 
+     * @param idMusica idMusica ID da música em questão;
+     * @param nomeMembro Nome do membro a ser adicionado;
+     * @return Retorna true se a operação for bem sucedida, e false se não.
+     */
+    public boolean adicionarMembroMusica(int idMusica, String nomeMembro) {
+        Criador criador = this.getCriadorLogado();
+        Musica musica = this.musicaDAO.buscarId(idMusica);
+        
+        if (criador == null || musica == null || nomeMembro == null || nomeMembro.trim().isEmpty()) return false;
+        
+        // Segurança: Verifica se a música pertence a algum álbum deste criador
+        boolean pertenceAoCriador = criador.getDiscografia().stream()
+            .anyMatch(album -> album.getMusicas().stream().anyMatch(m -> m.getId() == idMusica));
+            
+        if (!pertenceAoCriador) {
+            System.out.println("Erro: Acesso negado! Esta música não pertence a você.");
+            return false;
+        }
+        
+        boolean adicionou = musica.adicionarMembroEquipe(nomeMembro);
+        if (adicionou) {
+            this.musicaDAO.atualizar(musica); // Sincroniza com o banco
+            System.out.println("Membro adicionado à equipe da música com sucesso!");
+            return true;
+        }
+        
+        System.out.println("Erro: Membro já existe na equipe!");
+        return false;
+    }
+    
+    /**
+     * Remove um membro da equipe de alguma música.
+     * 
+     * @param idMusica ID da música em questão;
+     * @param nomeMembro Nome do membro a ser removido;
+     * @return Retorna true se a operação for bem sucedida, e false se não.
+     */
+    public boolean removerMembroMusica(int idMusica, String nomeMembro) {
+    	Criador criador = this.getCriadorLogado();
+        Musica musica = this.musicaDAO.buscarId(idMusica);
+        
+        if (criador == null || musica == null) return false;
+        
+        boolean pertenceAoCriador = criador.getDiscografia().stream()
+            .anyMatch(album -> album.getMusicas().stream().anyMatch(m -> m.getId() == idMusica));
+            
+        if (!pertenceAoCriador) return false;
+        
+        boolean removeu = musica.removerMembroEquipe(nomeMembro); 
+        if (removeu) {
+            this.musicaDAO.atualizar(musica); // Sincroniza a remoção com o banco
+            System.out.println("Membro removido da equipe!");
+            return true;
+        }
+        
+        System.out.println("Erro: Membro não encontrado na equipe.");
+        return false;
     }
 }

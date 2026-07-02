@@ -9,7 +9,10 @@ import model.content.Playlist;
 import model.content.Album;
 import model.content.Podcast;
 import model.content.Episodio;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -232,6 +235,49 @@ public class ControllerOuvinte {
 	}
 	
 	/**
+	 * Recupera os dados de todas as playlists criadas pelo ouvinte.
+	 * 
+	 * @return Retorna a lista de playlists recuperadas.
+	 */
+	public List <Playlist> listarPlaylistsOuvinte() {
+		Ouvinte ouvinte = this.getOuvinteLogado();
+		if (ouvinte == null) return new ArrayList<>();
+		return ouvinte.getPlaylists();
+	}
+	
+	/**
+	 * Retorna os dados da música de uma playlist específica.
+	 * 
+	 * @param idPlaylist ID da playlist solicitada.
+	 * @return Retorna a lista de músicas da playlist recuperada.
+	 */
+	public List<Musica> listarMusicasPlaylist(int idPlaylist) {
+        Ouvinte ouvinte = this.getOuvinteLogado();
+        if (ouvinte == null) {
+            return new ArrayList<>();
+        }
+
+        // Busca a playlist correspondente dentro da lista do ouvinte logado.
+        return ouvinte.getPlaylists().stream()
+            .filter(p -> p.getId() == idPlaylist)
+            .findFirst()
+            .map(Playlist::getMusicas) // Se achar a playlist, extrai a lista de músicas dela.
+            .orElse(new ArrayList<>()); // Se não achar, devolve uma lista vazia.
+    }
+	
+	/**
+	 * Busca os dados de todas as músicas cadastradas, assim o ouvinte
+	 * pode escolher mais facilmente qual música colocar na playlist.
+	 * 
+	 * @return Retorna a lista com todas as músicas recuperadas.
+	 */
+	public List <Musica> listarTodasMusicas() {
+		Ouvinte ouvinte = this.getOuvinteLogado();
+		if (ouvinte == null) return new ArrayList<>();
+		return this.musicaDAO.listarMusicas();
+	}
+	
+	/**
 	 * Método para favoritar um álbum, com verificação de duplicata e objetos nulos.
 	 * 
 	 * @param idAlbum ID do álbum a ser 'favoritado'.
@@ -302,6 +348,26 @@ public class ControllerOuvinte {
 	}
 	
 	/**
+	 * Busca os dados dos álbuns favoritados pelo ouvinte.
+	 * 
+	 * @return Retorna a lista com todos os álbuns recuperados.
+	 */
+	public List<Album> listarAlbunsFavoritos() {
+	    Ouvinte ouvinte = this.getOuvinteLogado();
+	    if (ouvinte == null) return new ArrayList<>();
+	    return ouvinte.getAlbunsFavoritos();
+	}
+	
+	/**
+	 * Recupera todos os álbuns registrados para o ouvinte;
+	 * 
+	 * @return Retorna a lista de álbuns recuperados.
+	 */
+	public List<Album> listarTodosAlbuns() {
+        return this.albumDAO.listarAlbuns();
+    }
+	
+	/**
 	 * Método para favoritar um podcast, com verificação de duplicata e objetos nulos.
 	 * 
 	 * @param idPodcast ID do podcast a ser 'favoritado';
@@ -367,6 +433,26 @@ public class ControllerOuvinte {
 		}
 		
 		return removeu;
+	}
+	
+	/**
+	 * Recupera os dados dos podcasts registrados.
+	 * 
+	 * @return Retorna a lista com os podcasts recuperados.
+	 */
+	public List<Podcast> listarTodosPodcasts() {
+        return this.podcastDAO.listarPodcasts();
+    }
+	
+	/**
+	 * Busca os dados dos podcasts favoritados pelo ouvinte.
+	 * 
+	 * @return Retorna a lista com todos os podcasts recuperados.
+	 */
+	public List<Podcast> listarPodcastsFavoritos() {
+	    Ouvinte ouvinte = this.getOuvinteLogado();
+	    if (ouvinte == null) return new ArrayList<>();
+	    return ouvinte.getPodcastsFavoritos();
 	}
 	
 	/**

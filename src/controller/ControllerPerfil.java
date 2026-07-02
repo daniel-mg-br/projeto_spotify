@@ -1,6 +1,6 @@
 package controller;
 
-import dao.*;  
+import dao.*;   
 import model.actors.*;
 
 /*
@@ -133,4 +133,82 @@ public class ControllerPerfil {
 		System.out.println("Erro: plano informado é inválido!");
 		return false;
 	}
+	
+	/**
+	 * Método para atualizar os dados do perfil do criador de conteúdo.
+	 * 
+	 * @param nomeArtistico Novo nome artístico do criador;
+	 * @param biografia Nova biografia do Criador;
+	 * @return Retorna true se a operação foi bem sucedida, e false se não.
+	 */
+	public boolean atualizarPerfilCriador(String nomeArtistico, String biografia) {
+		Usuario usuario = this.getUsuarioLogado();
+			
+		if (usuario == null) {
+			System.out.println("Erro: nenhum usuário logado!");
+			return false;
+		}
+		
+		if (!(usuario instanceof Criador)) {
+			System.out.println("Erro: acesso negado! Apenas criadores!");
+			return false;
+		}
+		
+		Criador criador = (Criador) usuario;
+		if (nomeArtistico == null || biografia == null) {
+			System.out.println("Dados inválidos!");
+			return false;
+		}
+		
+		criador.setNomeArtistico(nomeArtistico);
+		criador.setBiografia(biografia);
+		
+		boolean atualizou = this.criadorDAO.atualizar(criador);
+		if (atualizou) {
+			System.out.println("Perfil atualizado com sucesso!");
+		} else {
+			System.out.println("Erro ao atualizar perfil!");
+		}
+		
+		return atualizou;
+	}
+	
+	/**
+	 * Atualiza a credencial do Administrador do sistema.
+	 * 
+	 * @param novaCredencial String com a nova credencial;
+	 * @return Retorna true se a operação for bem sucedida, e false se não.
+	 */
+	public boolean atualizarCredencialAdmin(String novaCredencial) {
+        Usuario usuario = this.getUsuarioLogado();
+        
+        if (usuario == null) {
+            System.out.println("Erro: nenhum usuário logado!");
+            return false;
+        }
+        
+        // Validação de segurança
+        if (!(usuario instanceof Administrador)) {
+            System.out.println("Erro: Acesso negado. Apenas administradores podem realizar esta ação!");
+            return false;
+        }
+        
+        if (novaCredencial == null || novaCredencial.trim().isEmpty()) {
+            System.out.println("Erro: Credencial inválida!");
+            return false;
+        }
+        
+        Administrador admin = (Administrador) usuario;
+        admin.setCredencial(novaCredencial); 
+        
+        boolean atualizou = this.adminDAO.atualizar(admin);
+        
+        if (atualizou) {
+            System.out.println("Credencial de administrador atualizada com sucesso!");
+        } else {
+            System.out.println("Erro ao tentar salvar a credencial no banco de dados.");
+        }
+        
+        return atualizou;
+    }
 }

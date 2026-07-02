@@ -196,9 +196,26 @@ public class ContaDAO {
 	 * @throws SQLException Caso haja um erro de SQL, dispara uma exceção.
 	 */
 	private Conta mapearConta(ResultSet rs) throws SQLException {
-		Date dataBanco = rs.getDate("data_criacao");
-		LocalDate dataCriacao = (dataBanco != null) ? dataBanco.toLocalDate() : null;
+		String dataTexto = rs.getString("data_criacao");
+		LocalDate dataCriacao = null;
 		
+		// Lógica para recuperar a data no banco de dados.
+		if (dataTexto != null && !dataTexto.isEmpty()) {
+			if (dataTexto.contains("-")) {
+				// Se a data tem "-", foi inserida por Script SQL (ex: "2026-06-30").
+				dataCriacao = LocalDate.parse(dataTexto.substring(0, 10));
+			} else {
+				// Se não tem "-", é um timestamp em milissegundos gerado pelo Java.
+				try {
+					long timestamp = Long.parseLong(dataTexto);
+					dataCriacao = new java.sql.Date(timestamp).toLocalDate();
+				} catch (Exception e) {
+					dataCriacao = LocalDate.now();
+				}
+			}
+		}
+		
+		// Instancia a conta com os dados do ResultSet.
 		return new Conta(
 				rs.getInt("id"),
 				rs.getString("login"),

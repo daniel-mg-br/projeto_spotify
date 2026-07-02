@@ -358,8 +358,22 @@ public class PodcastDAO {
 	 * @throws SQLException Caso haja erro de SQL, dispara uma exceção.
 	 */
 	private Podcast mapearPodcast(Connection conn, ResultSet rs) throws SQLException {
-		Date dataBanco = rs.getDate("criacao");
-		LocalDate criacao = (dataBanco != null) ? dataBanco.toLocalDate() : null;
+		String dataTexto = rs.getString("criacao");
+		LocalDate criacao = null;
+		
+		// Lógica para converter o texto com a data no banco de dados para um LocalDate.
+		if (dataTexto != null && !dataTexto.isEmpty()) {
+			if (dataTexto.contains("-")) {
+				criacao = LocalDate.parse(dataTexto.substring(0, 10));
+			} else {
+				try {
+					long timestamp = Long.parseLong(dataTexto);
+					criacao = new java.sql.Date(timestamp).toLocalDate();
+				} catch (Exception e) {
+					criacao = LocalDate.now();
+				}
+			}
+		}
 		
 		// Instancia o podcast com os dados do ResultSet.
 		Podcast podcastEncontrado = new Podcast (

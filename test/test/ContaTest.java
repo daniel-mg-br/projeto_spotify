@@ -8,7 +8,11 @@ import model.actors.Conta;
 
 public class ContaTest {
     
-	//Testa se esta criando a conta com os valores corretos e correspondentes
+    /**
+     * Verifica se uma conta é criada corretamente com os valores
+     * informados no construtor e com os valores padrão definidos
+     * para plano, status e data de criação.
+     */
     @Test
     void deveCriarContaComValoresPadrao() {
 
@@ -19,8 +23,12 @@ public class ContaTest {
         assertEquals("Free", conta.getPlano());
         assertEquals("Ativa", conta.getStatus());
         assertNotNull(conta.getDataCriacao());
-    }
-    //Esse teste verifica se o método funciona corretamente para uma senha válida
+    }   
+
+    /**
+     * Verifica se o método validarSenha() retorna verdadeiro
+     * quando a senha informada corresponde à senha da conta.
+     */
     @Test
     void deveValidarSenhaCorretamente() {
 
@@ -28,7 +36,11 @@ public class ContaTest {
 
         assertTrue(conta.validarSenha("123"));
     }
-    // Esse teste verifica se o método funciona corretamente para uma senha inválida
+
+    /**
+     * Verifica se o método validarSenha() retorna falso
+     * quando a senha informada é diferente da senha cadastrada.
+     */
     @Test
     void naoDeveValidarSenhaIncorreta() {
 
@@ -36,9 +48,11 @@ public class ContaTest {
 
         assertFalse(conta.validarSenha("456"));
     }
-    /* Esse teste faz duas coisas: Primeiro confirmamos que alterarSenha() retorna true,
-    indicando sucesso, e depois verificamos que o atributo senha foi atualizado para 
-    o novo valor." */
+    
+    /**
+     * Verifica se o método alterarSenha() altera a senha com sucesso
+     * quando é informado um novo valor diferente da senha atual.
+     */
     @Test
     void deveAlterarSenha() {
 
@@ -48,7 +62,11 @@ public class ContaTest {
 
         assertEquals("novaSenha", conta.getSenha());
     }
-    //Esse teste verifica se o sistema impede corretamente a troca da senha para o mesmo valor já utilizado
+
+    /**
+     * Verifica se o método alterarSenha() impede a alteração
+     * quando a nova senha é igual à senha já cadastrada.
+     */
     @Test
     void naoDeveAlterarParaMesmaSenha() {
 

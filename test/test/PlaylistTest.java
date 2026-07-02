@@ -16,7 +16,11 @@ import model.actors.Ouvinte;
 
 
 public class PlaylistTest {
-	//Testa se o método está criando playlist corretamente e com os dados corretos
+	
+    /**
+     * Verifica se uma playlist é criada corretamente com os valores
+     * informados no construtor.
+     */
 	@Test
 	void deveCriarPlaylistCorretamente() {
 		
@@ -33,7 +37,11 @@ public class PlaylistTest {
 		assertEquals(LocalDate.of(2026, 07, 23), nova.getCriacao());
 		
 	}
-	//Testa se o método está adicionando musica corretamente
+
+    /**
+     * Verifica se o método adicionarMusica() adiciona corretamente
+     * uma música à playlist.
+     */
 	@Test
 	void deveAdicionarMusicaCorretamente() {
 		
@@ -49,7 +57,11 @@ public class PlaylistTest {
 		assertTrue(nov.adicionarMusica(nova));
 		
 	}
-	//Testa se o método impede que se adicione a mesma música duas vezes, ou uma música null
+	
+    /**
+     * Verifica se o método adicionarMusica() impede a adição
+     * de músicas inválidas, como músicas duplicadas ou nulas.
+     */a null
 	@Test
 	void naoDeveAdicionarMusicaInvalida() {
 		
@@ -66,7 +78,11 @@ public class PlaylistTest {
 		assertFalse(nov.adicionarMusica(nova));
 		assertFalse(nov.adicionarMusica(null));		
 	}
-	//Testa se o método remove uma música corretamente
+
+     /**
+      * Verifica se o método removerMusica() remove corretamente
+      * uma música previamente adicionada à playlist.
+      */
 	@Test
 	void deveRemoverMusicaCorretamente() {
 		

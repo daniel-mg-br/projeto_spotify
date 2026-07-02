@@ -14,7 +14,10 @@ import model.content.Playlist;
 
 public class OuvinteTest {
 	
-	//Este teste deve testar se o plano foi atualizado corretamente
+	/**
+     * Verifica se o método isPremium() retorna verdadeiro
+     * quando a conta do ouvinte possui o plano Premium.
+     */
 	@Test
 	void deveTestarSeIsPremium() {
 
@@ -27,7 +30,11 @@ public class OuvinteTest {
 		assertTrue(ouvinte.isPremium());
 		
 	}
-	//Este teste deve testar se uma playlist é adicionada sem problemas
+
+    /**
+     * Verifica se o método adicionarPlaylist() adiciona
+     * corretamente uma playlist ao ouvinte.
+     */
 	@Test
 	void deveAdicionarPlaylist() {
 		
@@ -40,7 +47,11 @@ public class OuvinteTest {
 		assertTrue(ouvinte.adicionarPlaylist(nova));
 		
 	}
-	//Testa se o método remove uma playlist corretamente
+
+    /**
+     * Verifica se o método removerPlaylist() remove corretamente
+     * uma playlist previamente adicionada ao ouvinte.
+     */
 	@Test
 	void deveRemoverPlaylist() {
 		

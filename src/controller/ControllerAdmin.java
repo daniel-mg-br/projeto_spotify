@@ -1,5 +1,8 @@
 package controller;
 
+import java.util.ArrayList;  
+import java.util.List;
+
 import dao.*;  
 import model.actors.*;
 import model.content.*;
@@ -69,7 +72,7 @@ public class ControllerAdmin {
 		
 		// Recupera a Conta do usuário a ser suspenso e atualiza seu status.
 		Conta contaAlvo = usuarioAlvo.getConta();
-		contaAlvo.setStatus("Suspenso");
+		contaAlvo.setStatus("SUSPENSO");
 		
 		boolean atualizou = this.contaDAO.atualizar(contaAlvo);
 		
@@ -114,5 +117,45 @@ public class ControllerAdmin {
 		
 		System.out.println("Erro: nenhum conteúdo encontrado com esse ID!");
 		return false;
+	}
+	
+	/**
+	 * Recupera os dados dos ouvintes do sistema para o Admin ver na tela.
+	 * 
+	 * @return Retorna a lista de ouvintes recuperados.
+	 */
+	public List<Ouvinte> listarTodosOuvintes() {
+	    if (this.getAdminLogado() == null) return new ArrayList<>();
+	    return this.ouvinteDAO.listarOuvintes();
+	}
+
+	/**
+	 * Recupera os dados dos criadores do sistema para o Admin ver na tela.
+	 * 
+	 * @return Retorna a lista de criadores recuperados.
+	 */
+	public List<Criador> listarTodosCriadores() {
+	    if (this.getAdminLogado() == null) return new ArrayList<>();
+	    return this.criadorDAO.listarCriadores();
+	}
+	
+	/**
+	 * Recupera os dados das músicas cadastradas para o Admin ver na tela.
+	 * 
+	 * @return Retorna a lista de músicas recuperadas.
+	 */
+	public List<Musica> listarTodasMusicas() {
+	    if (this.getAdminLogado() == null) return new ArrayList<>();
+	    return this.musicaDAO.listarMusicas();
+	}
+	
+	/**
+	 * Recupera os dados dos episódios cadastrados para o Admin ver na tela.
+	 * 
+	 * @return Retorna a lista de episódios recuperados.
+	 */
+	public List<Episodio> listarTodosEpisodios() {
+	    if (this.getAdminLogado() == null) return new ArrayList<>();
+	    return this.episodioDAO.listarEpisodios();
 	}
 }

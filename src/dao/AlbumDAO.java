@@ -359,8 +359,22 @@ public class AlbumDAO {
 	 * @throws SQLException Caso haja um erro de SQL, dispara a exceção.
 	 */
 	private Album mapearAlbum(Connection conn, ResultSet rs) throws SQLException {
-		Date dataBanco = rs.getDate("lancamento");
-		LocalDate lancamento = (dataBanco != null) ? dataBanco.toLocalDate() : null;
+		String dataTexto = rs.getString("lancamento");
+		LocalDate lancamento = null;
+		
+		// Lógica para converter o texto com a data no banco de dados para um LocalDate.
+		if (dataTexto != null && !dataTexto.isEmpty()) {
+			if (dataTexto.contains("-")) {
+				lancamento = LocalDate.parse(dataTexto.substring(0, 10));
+			} else {
+				try {
+					long timestamp = Long.parseLong(dataTexto);
+					lancamento = new java.sql.Date(timestamp).toLocalDate();
+				} catch (Exception e) {
+					lancamento = LocalDate.now();
+				}
+			}
+		}
 		
 		// Instancia um novo álbum com os dados do ResultSet.
 		Album albumEncontrado = new Album(

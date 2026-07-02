@@ -1,6 +1,6 @@
 package view;
 
-import controller.ControllerAutenticador;
+import controller.ControllerAutenticador; 
 import model.actors.Administrador;
 import model.actors.Criador;
 import model.actors.Ouvinte;
@@ -83,6 +83,11 @@ public class LoginGUI extends JFrame {
         String login = txtLogin.getText();
         String senha = new String(txtSenha.getPassword());
 
+        if (login.trim().isEmpty() || senha.trim().isEmpty()) {
+        	JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
         // Autenticação via controller
         Usuario u = controller.login(login, senha);
 

@@ -1,6 +1,7 @@
 package dao;
 
-import java.sql.*;  
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;  
 import java.util.List;
 import model.actors.Conta;
@@ -319,13 +320,30 @@ public class CriadorDAO {
 		int contaId = rs.getInt("conta_id");
 		Conta conta = contaDAO.buscarId(contaId);
 		
+		String dataTexto = rs.getString("aniversario");
+		LocalDate aniversario = null;
+		
+		// Lógica para converter o texto com a data no banco de dados para um LocalDate.
+		if (dataTexto != null && !dataTexto.isEmpty()) {
+			if (dataTexto.contains("-")) {
+				aniversario = LocalDate.parse(dataTexto.substring(0, 10));
+			} else {
+				try {
+					long timestamp = Long.parseLong(dataTexto);
+					aniversario = new java.sql.Date(timestamp).toLocalDate();
+				} catch (Exception e) {
+					aniversario = LocalDate.now();
+				}
+			}
+		}
+		
 		// Instancia o criador com os dados do ResultSet.
 		Criador criadorEncontrado = new Criador(
 				conta, 
 				rs.getInt("id"), 
 				rs.getString("nome"), 
 				rs.getString("sexo"),
-				rs.getDate("aniversario").toLocalDate(),
+				aniversario,
 				rs.getString("nome_artistico"),
 				rs.getString("biografia"),
 				rs.getInt("ouvintes_mensais"),

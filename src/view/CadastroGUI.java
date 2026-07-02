@@ -1,6 +1,6 @@
 package view;
 
-import controller.ControllerAutenticador;
+import controller.ControllerAutenticador; 
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,26 +13,30 @@ public class CadastroGUI extends JFrame {
     private JTextField txtLogin;
     private JPasswordField txtSenha;
     private JTextField txtNome;
-    private JTextField txtSexo;
+    
+    // Transformados em JComboBox para evitar erros de digitação e regras do banco
+    private JComboBox<String> cbSexo;
+    private JComboBox<String> cbTipoUsuario;
+    
     private JTextField txtAno;
     private JTextField txtMes;
     private JTextField txtDia;
+    
     private ControllerAutenticador controller;
 
     public CadastroGUI() {
         this.controller = new ControllerAutenticador();
 
         setTitle("Cadastro de Usuário");
-        setSize(400, 350); // Aumentei um pouco o tamanho para acomodar o botão de voltar
+        setSize(400, 400); // Aumentei um pouco para caber os novos componentes
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Painel Principal
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // Painel do Formulário
-        JPanel formPanel = new JPanel(new GridLayout(7, 2, 5, 5));
+        // Painel do Formulário agora com 8 linhas
+        JPanel formPanel = new JPanel(new GridLayout(8, 2, 5, 5));
         
         formPanel.add(new JLabel("Login:"));
         txtLogin = new JTextField();
@@ -46,9 +50,11 @@ public class CadastroGUI extends JFrame {
         txtNome = new JTextField();
         formPanel.add(txtNome);
 
+        // JComboBox para o Sexo (Garante que bate com a restrição do BD)
         formPanel.add(new JLabel("Sexo:"));
-        txtSexo = new JTextField();
-        formPanel.add(txtSexo);
+        String[] opcoesSexo = {"M", "F", "Outro", "Prefiro não informar"};
+        cbSexo = new JComboBox<>(opcoesSexo);
+        formPanel.add(cbSexo);
 
         formPanel.add(new JLabel("Data Nasc (YYYY MM DD):"));
         JPanel dataPanel = new JPanel(new GridLayout(1, 3));
@@ -60,74 +66,80 @@ public class CadastroGUI extends JFrame {
         dataPanel.add(txtDia);
         formPanel.add(dataPanel);
 
-        JButton btnCriarOuvinte = new JButton("Criar Ouvinte");
-        JButton btnCriarCriador = new JButton("Criar Criador");
-        formPanel.add(btnCriarOuvinte);
-        formPanel.add(btnCriarCriador);
+        // JComboBox para escolher o tipo de conta
+        formPanel.add(new JLabel("Tipo de Conta:"));
+        String[] tipos = {"Ouvinte", "Criador de Conteúdo"};
+        cbTipoUsuario = new JComboBox<>(tipos);
+        formPanel.add(cbTipoUsuario);
 
-        // --- Nova Funcionalidade: Botão Voltar (Logout) ---
+        // Apenas um botão de cadastro agora
+        JButton btnCadastrar = new JButton("Cadastrar");
+        formPanel.add(new JLabel("")); // Célula vazia para alinhar o botão à direita
+        formPanel.add(btnCadastrar);
+
+        // Botão Voltar (Logout)
         JButton btnVoltar = new JButton("Voltar ao Login");
         btnVoltar.addActionListener(e -> {
-            dispose();       // Fecha a janela de cadastro
-            new LoginGUI();  // Retorna à tela de login
+            dispose();       
+            new LoginGUI();  
         });
 
-        // Adicionando tudo ao painel principal
         panel.add(formPanel, BorderLayout.CENTER);
         panel.add(btnVoltar, BorderLayout.SOUTH);
 
-        btnCriarOuvinte.addActionListener(e -> cadastrarOuvinte());
-        btnCriarCriador.addActionListener(e -> cadastrarCriador());
+        // Único evento de cadastro
+        btnCadastrar.addActionListener(e -> realizarCadastro());
 
         add(panel);
         setVisible(true);
     }
 
-    private void cadastrarOuvinte() {
-        try {
-            int ano = Integer.parseInt(txtAno.getText());
-            int mes = Integer.parseInt(txtMes.getText());
-            int dia = Integer.parseInt(txtDia.getText());
+    /**
+     * Método unificado para processar o cadastro, ler os JComboBox e chamar o Controller correto.
+     */
+    private void realizarCadastro() {
+        String login = txtLogin.getText().trim();
+        String senha = new String(txtSenha.getPassword()).trim();
+        String nome = txtNome.getText().trim();
+        String anoStr = txtAno.getText().trim();
+        String mesStr = txtMes.getText().trim();
+        String diaStr = txtDia.getText().trim();
 
-            boolean ok = controller.cadastrarOuvinte(
-                    txtLogin.getText(), new String(txtSenha.getPassword()), 
-                    txtNome.getText(), txtSexo.getText(),
-                    java.time.LocalDate.of(ano, mes, dia)
-            );
-
-            if (ok) {
-                JOptionPane.showMessageDialog(this, "Ouvinte cadastrado!");
-                dispose();
-                new LoginGUI();
-            } else {
-                JOptionPane.showMessageDialog(this, "Erro ao cadastrar ouvinte");
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Dados inválidos: Verifique os números da data.");
+        // 1. Validação de campos vazios
+        if (login.isEmpty() || senha.isEmpty() || nome.isEmpty() || anoStr.isEmpty() || mesStr.isEmpty() || diaStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, preencha todos os campos!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-    }
 
-    private void cadastrarCriador() {
         try {
-            int ano = Integer.parseInt(txtAno.getText());
-            int mes = Integer.parseInt(txtMes.getText());
-            int dia = Integer.parseInt(txtDia.getText());
+            int ano = Integer.parseInt(anoStr);
+            int mes = Integer.parseInt(mesStr);
+            int dia = Integer.parseInt(diaStr);
+            
+            // Pegando os valores selecionados nos menus suspensos
+            String sexoSelecionado = (String) cbSexo.getSelectedItem();
+            String tipoUsuario = (String) cbTipoUsuario.getSelectedItem();
 
-            boolean ok = controller.cadastrarCriador(
-                    txtLogin.getText(), new String(txtSenha.getPassword()), 
-                    txtNome.getText(), txtSexo.getText(),
-                    java.time.LocalDate.of(ano, mes, dia)
-            );
+            boolean ok = false;
 
+            // 2. Decide qual método do Controller chamar com base na escolha
+            if (tipoUsuario.equals("Ouvinte")) {
+                ok = controller.cadastrarOuvinte(login, senha, nome, sexoSelecionado, java.time.LocalDate.of(ano, mes, dia));
+            } else {
+                ok = controller.cadastrarCriador(login, senha, nome, sexoSelecionado, java.time.LocalDate.of(ano, mes, dia));
+            }
+
+            // 3. Feedback final
             if (ok) {
-                JOptionPane.showMessageDialog(this, "Criador cadastrado!");
+                JOptionPane.showMessageDialog(this, tipoUsuario + " cadastrado com sucesso!");
                 dispose();
                 new LoginGUI();
             } else {
-                JOptionPane.showMessageDialog(this, "Erro ao cadastrar criador");
+                JOptionPane.showMessageDialog(this, "Erro ao cadastrar. O login já pode estar em uso.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
+            
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Dados inválidos: Verifique os números da data.");
+            JOptionPane.showMessageDialog(this, "Dados inválidos: Verifique se a data contém apenas números válidos.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

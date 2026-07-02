@@ -1,6 +1,7 @@
 package dao;
 
-import java.sql.*; 
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;  
 import java.util.List;
 import model.actors.Administrador;
@@ -306,13 +307,32 @@ public class AdministradorDAO {
 		int idConta = rs.getInt("conta_id");
 		Conta conta = contaDAO.buscarId(idConta);
 		
+		String dataTexto = rs.getString("aniversario");
+		LocalDate aniversario = null;
+		
+		// Lógica para recuperar as datas em formato de texto no banco de dados.
+		if (dataTexto != null && !dataTexto.isEmpty()) {
+			if (dataTexto.contains("-")) {
+				// Formato texto (SQL).
+				aniversario = LocalDate.parse(dataTexto.substring(0, 10));
+			} else {
+				// Formato milissegundos (Java JDBC).
+				try {
+					long timestamp = Long.parseLong(dataTexto);
+					aniversario = new java.sql.Date(timestamp).toLocalDate();
+				} catch (Exception e) {
+					aniversario = LocalDate.now();
+				}
+			}
+		}
+		
 		// Instancia o administrador com os dados do ResultSet.
 		return new Administrador(
 				conta, 
 				rs.getInt("id"), 
 				rs.getString("nome"), 
 				rs.getString("sexo"),
-				rs.getDate("aniversario").toLocalDate(),
+				aniversario,
 				rs.getString("credencial")
 		);
 	}

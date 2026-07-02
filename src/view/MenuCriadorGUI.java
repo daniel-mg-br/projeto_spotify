@@ -1,236 +1,437 @@
 package view;
 
 import controller.ControllerCriador;
+import controller.ControllerPerfil;
+import model.content.Album;
+import model.content.Episodio;
+import model.content.Musica;
+import model.content.Podcast;
+
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 /**
- * Classe responsável pela interface gráfica do menu do Criador.
- * Conecta-se ao ControllerCriador para executar todas as ações do sistema.
+ * Interface gráfica para o menu do Criador.
+ * Organizada em Abas (JTabbedPane), modularizada e com componentes ancorados
+ * ao topo para evitar distorções de tamanho na interface.
  */
 public class MenuCriadorGUI extends JFrame {
 
     private ControllerCriador controller;
+    private ControllerPerfil controllerPerfil;
+
+    // Componentes visuais atualizados dinamicamente
+    private JComboBox<String> cbMeusAlbuns;
+    private JComboBox<String> cbMinhasMusicas;
+    private JComboBox<String> cbMeusPodcasts;
+    private JComboBox<String> cbMeusEpisodios;
 
     public MenuCriadorGUI() {
         this.controller = new ControllerCriador();
+        this.controllerPerfil = new ControllerPerfil();
 
-        // Configuração da janela principal
-        setTitle("Painel do Criador");
-        setSize(650, 450); // Tamanho ajustado para o novo layout
+        setTitle("Painel do Criador de Conteúdo");
+        setSize(550, 600); // Altura estendida para acomodar bem os formulários
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); 
+        setLocationRelativeTo(null);
 
-        // Painel principal usando BorderLayout
-        JPanel painelPrincipal = new JPanel(new BorderLayout(10, 10));
-        painelPrincipal.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.addTab("Meus Álbuns", criarPainelAlbuns());
+        tabbedPane.addTab("Meus Podcasts", criarPainelPodcasts());
+        tabbedPane.addTab("Meu Perfil", criarPainelPerfil());
 
-        // --- 1. Painel de Gerenciamento de Álbuns ---
-        JPanel painelAlbuns = new JPanel(new GridLayout(3, 2, 10, 10));
-        painelAlbuns.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Gerenciamento de Álbuns", 
-                TitledBorder.LEFT, TitledBorder.TOP));
+        add(tabbedPane, BorderLayout.CENTER);
 
-        JButton btnCriarAlbum = new JButton("Criar Novo Álbum");
-        JButton btnLancarAlbum = new JButton("Lançar Álbum");
-        JButton btnAddMusica = new JButton("Adicionar Música");
-        JButton btnRemoverMusica = new JButton("Remover Música");
-        JButton btnDeletarAlbum = new JButton("Deletar Álbum");
-
-        painelAlbuns.add(btnCriarAlbum);
-        painelAlbuns.add(btnLancarAlbum);
-        painelAlbuns.add(btnAddMusica);
-        painelAlbuns.add(btnRemoverMusica);
-        painelAlbuns.add(btnDeletarAlbum);
-        painelAlbuns.add(new JLabel("")); // Espaço vazio para manter o grid simétrico
-
-        // --- 2. Painel de Gerenciamento de Podcasts ---
-        JPanel painelPodcasts = new JPanel(new GridLayout(2, 2, 10, 10));
-        painelPodcasts.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Gerenciamento de Podcasts", 
-                TitledBorder.LEFT, TitledBorder.TOP));
-
-        JButton btnCriarPodcast = new JButton("Criar Novo Podcast");
-        JButton btnAddEpisodio = new JButton("Adicionar Episódio");
-        JButton btnRemoverEpisodio = new JButton("Remover Episódio");
-        JButton btnDeletarPodcast = new JButton("Deletar Podcast");
-
-        painelPodcasts.add(btnCriarPodcast);
-        painelPodcasts.add(btnAddEpisodio);
-        painelPodcasts.add(btnRemoverEpisodio);
-        painelPodcasts.add(btnDeletarPodcast);
-
-        // --- 3. Painel de Ações do Sistema (Rodapé) ---
-        JPanel painelSistema = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        // Rodapé com o botão de Logout
+        JPanel painelRodape = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        painelRodape.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
         JButton btnLogout = new JButton("Sair (Logout)");
-        painelSistema.add(btnLogout);
-
-        // --- 4. Configuração das Ações (Listeners) ---
-
-        // Ações de Álbum
-        btnCriarAlbum.addActionListener(e -> {
-            String titulo = JOptionPane.showInputDialog(this, "Digite o título do Álbum:");
-            if (titulo != null && !titulo.trim().isEmpty()) {
-                String tipo = JOptionPane.showInputDialog(this, "Digite o tipo do Álbum (ex: EP, Studio):");
-                boolean sucesso = controller.criarAlbum(titulo, tipo);
-                exibirMensagem(sucesso, "Álbum criado com sucesso!", "Erro ao criar álbum.");
-            }
-        });
-
-        btnLancarAlbum.addActionListener(e -> {
-            try {
-                String idStr = JOptionPane.showInputDialog(this, "Digite o ID do Álbum a ser lançado:");
-                if (idStr == null) return;
-                int idAlbum = Integer.parseInt(idStr);
-                
-                boolean sucesso = controller.lancarAlbum(idAlbum);
-                exibirMensagem(sucesso, "Álbum lançado com sucesso!", "Erro: Álbum não encontrado ou acesso negado.");
-            } catch (NumberFormatException ex) {
-                exibirErroFormatacao();
-            }
-        });
-
-        btnAddMusica.addActionListener(e -> {
-            try {
-                String idStr = JOptionPane.showInputDialog(this, "Digite o ID do Álbum:");
-                if (idStr == null) return;
-                int idAlbum = Integer.parseInt(idStr);
-
-                String titulo = JOptionPane.showInputDialog(this, "Digite o título da Música:");
-                int duracao = Integer.parseInt(JOptionPane.showInputDialog(this, "Digite a duração (em minutos):"));
-                String genero = JOptionPane.showInputDialog(this, "Digite o gênero:");
-                String letra = JOptionPane.showInputDialog(this, "Digite a letra (opcional):");
-
-                boolean sucesso = controller.adicionarMusicaAlbum(idAlbum, titulo, duracao, genero, letra);
-                exibirMensagem(sucesso, "Música adicionada!", "Erro ao adicionar música.");
-            } catch (NumberFormatException ex) {
-                exibirErroFormatacao();
-            }
-        });
-
-        btnRemoverMusica.addActionListener(e -> {
-            try {
-                String idAlbumStr = JOptionPane.showInputDialog(this, "Digite o ID do Álbum:");
-                if (idAlbumStr == null) return;
-                int idAlbum = Integer.parseInt(idAlbumStr);
-
-                int idMusica = Integer.parseInt(JOptionPane.showInputDialog(this, "Digite o ID da Música a remover:"));
-
-                boolean sucesso = controller.removerMusicaAlbum(idAlbum, idMusica);
-                exibirMensagem(sucesso, "Música removida com sucesso!", "Erro ao remover música.");
-            } catch (NumberFormatException ex) {
-                exibirErroFormatacao();
-            }
-        });
-
-        btnDeletarAlbum.addActionListener(e -> {
-            try {
-                String idStr = JOptionPane.showInputDialog(this, "Digite o ID do Álbum a ser deletado:");
-                if (idStr == null) return;
-                int idAlbum = Integer.parseInt(idStr);
-                
-                int confirmacao = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja deletar este álbum e todas as suas músicas?", "Atenção", JOptionPane.YES_NO_OPTION);
-                if (confirmacao == JOptionPane.YES_OPTION) {
-                    boolean sucesso = controller.deletarAlbum(idAlbum);
-                    exibirMensagem(sucesso, "Álbum deletado com sucesso!", "Erro ao deletar álbum.");
-                }
-            } catch (NumberFormatException ex) {
-                exibirErroFormatacao();
-            }
-        });
-
-        // Ações de Podcast
-        btnCriarPodcast.addActionListener(e -> {
-            String nome = JOptionPane.showInputDialog(this, "Digite o nome do Podcast:");
-            if (nome != null && !nome.trim().isEmpty()) {
-                String tema = JOptionPane.showInputDialog(this, "Digite o tema do Podcast:");
-                boolean sucesso = controller.criarPodcast(nome, tema);
-                exibirMensagem(sucesso, "Podcast criado com sucesso!", "Erro ao criar podcast.");
-            }
-        });
-
-        btnAddEpisodio.addActionListener(e -> {
-            try {
-                String idStr = JOptionPane.showInputDialog(this, "Digite o ID do Podcast:");
-                if (idStr == null) return;
-                int idPodcast = Integer.parseInt(idStr);
-
-                String titulo = JOptionPane.showInputDialog(this, "Digite o título do Episódio:");
-                int duracao = Integer.parseInt(JOptionPane.showInputDialog(this, "Digite a duração (em minutos):"));
-                int numEpisodio = Integer.parseInt(JOptionPane.showInputDialog(this, "Digite o número do episódio:"));
-
-                boolean sucesso = controller.adicionarEpPodcast(idPodcast, titulo, duracao, numEpisodio);
-                exibirMensagem(sucesso, "Episódio adicionado!", "Erro ao adicionar episódio.");
-            } catch (NumberFormatException ex) {
-                exibirErroFormatacao();
-            }
-        });
-
-        btnRemoverEpisodio.addActionListener(e -> {
-            try {
-                String idPodStr = JOptionPane.showInputDialog(this, "Digite o ID do Podcast:");
-                if (idPodStr == null) return;
-                int idPodcast = Integer.parseInt(idPodStr);
-
-                int idEpisodio = Integer.parseInt(JOptionPane.showInputDialog(this, "Digite o ID do Episódio a remover:"));
-
-                boolean sucesso = controller.removerEpPodcast(idPodcast, idEpisodio);
-                exibirMensagem(sucesso, "Episódio removido com sucesso!", "Erro ao remover episódio.");
-            } catch (NumberFormatException ex) {
-                exibirErroFormatacao();
-            }
-        });
-
-        btnDeletarPodcast.addActionListener(e -> {
-            try {
-                String idStr = JOptionPane.showInputDialog(this, "Digite o ID do Podcast a ser deletado:");
-                if (idStr == null) return;
-                int idPodcast = Integer.parseInt(idStr);
-                
-                int confirmacao = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja deletar este podcast e todos os seus episódios?", "Atenção", JOptionPane.YES_NO_OPTION);
-                if (confirmacao == JOptionPane.YES_OPTION) {
-                    boolean sucesso = controller.deletarPodcast(idPodcast);
-                    exibirMensagem(sucesso, "Podcast deletado com sucesso!", "Erro ao deletar podcast.");
-                }
-            } catch (NumberFormatException ex) {
-                exibirErroFormatacao();
-            }
-        });
-
-        // Ação de Logout (Volta para a tela de Login)
         btnLogout.addActionListener(e -> {
-            dispose();       // Fecha o Menu do Criador
-            new LoginGUI();  // Abre a tela de Login novamente
+            dispose();
+            new LoginGUI();
         });
+        painelRodape.add(btnLogout);
+        add(painelRodape, BorderLayout.SOUTH);
 
-        // --- 5. Montagem Final da Janela ---
-        JPanel painelCentral = new JPanel(new BorderLayout(10, 10));
-        painelCentral.add(painelAlbuns, BorderLayout.NORTH);
-        painelCentral.add(painelPodcasts, BorderLayout.CENTER);
+        // Carrega os dados iniciais do banco para as caixas de seleção
+        atualizarListasAlbuns();
+        atualizarListasPodcasts();
 
-        painelPrincipal.add(painelCentral, BorderLayout.CENTER);
-        painelPrincipal.add(painelSistema, BorderLayout.SOUTH);
-
-        add(painelPrincipal);
         setVisible(true);
     }
 
     /**
-     * Método auxiliar para exibir mensagens de sucesso ou erro.
+     * Extrai apenas o número do ID de uma string formatada como "14 - Nome"
      */
-    private void exibirMensagem(boolean sucesso, String msgSucesso, String msgErro) {
-        if (sucesso) {
-            JOptionPane.showMessageDialog(this, msgSucesso, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, msgErro, "Erro", JOptionPane.ERROR_MESSAGE);
+    private int extrairId(String textoCombo) {
+        if (textoCombo == null) return -1;
+        try {
+            return Integer.parseInt(textoCombo.split(" - ")[0]);
+        } catch (Exception e) {
+            return -1;
         }
     }
 
-    /**
-     * Método auxiliar para exibir erros de formatação de números.
-     */
-    private void exibirErroFormatacao() {
-        JOptionPane.showMessageDialog(this, "Entrada inválida. Certifique-se de digitar apenas números (IDs, duração, etc).", "Erro de Formatação", JOptionPane.WARNING_MESSAGE);
+    // ================== PAINEL DE ÁLBUNS E MÚSICAS ==================
+    private JPanel criarPainelAlbuns() {
+        JPanel wrapper = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // 1. Formulário de Seleção (Grid Alinhado)
+        JPanel pForm = new JPanel(new GridLayout(2, 2, 10, 10));
+        pForm.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
+        pForm.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        cbMeusAlbuns = new JComboBox<>();
+        cbMinhasMusicas = new JComboBox<>();
+        pForm.add(new JLabel("Selecione o Álbum:"));
+        pForm.add(cbMeusAlbuns);
+        pForm.add(new JLabel("Músicas deste Álbum:"));
+        pForm.add(cbMinhasMusicas);
+
+        // Ouvinte de evento: quando mudar o álbum selecionado, atualiza o combo de músicas automaticamente!
+        cbMeusAlbuns.addActionListener(e -> atualizarListasMusicas());
+
+        // 2. Grupo de Botões: Gestão do Álbum
+        JPanel pBotoesAlbum = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        pBotoesAlbum.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JButton btnCriarAlbum = new JButton("Criar Novo Álbum");
+        btnCriarAlbum.addActionListener(e -> {
+            String titulo = JOptionPane.showInputDialog(panel, "Título do Álbum:");
+            if (titulo != null && !titulo.trim().isEmpty()) {
+                String tipo = JOptionPane.showInputDialog(panel, "Tipo (ex: Studio, Single, Live):");
+                controller.criarAlbum(titulo, tipo != null ? tipo : "Studio");
+                atualizarListasAlbuns();
+                JOptionPane.showMessageDialog(panel, "Álbum criado com sucesso!");
+            }
+        });
+        
+        JButton btnLancar = new JButton("Lançar Álbum");
+        btnLancar.addActionListener(e -> {
+            if (cbMeusAlbuns.getSelectedItem() == null) return;
+            int idA = extrairId(cbMeusAlbuns.getSelectedItem().toString());
+            if (controller.lancarAlbum(idA)) {
+                JOptionPane.showMessageDialog(panel, "Álbum publicado e disponível para os ouvintes!");
+            }
+        });
+
+        JButton btnDeletarAlbum = new JButton("Deletar Álbum");
+        btnDeletarAlbum.addActionListener(e -> {
+            if (cbMeusAlbuns.getSelectedItem() == null) return;
+            int idA = extrairId(cbMeusAlbuns.getSelectedItem().toString());
+            int conf = JOptionPane.showConfirmDialog(panel, "Excluir este álbum e todas as suas faixas?", "Aviso", JOptionPane.YES_NO_OPTION);
+            if (conf == JOptionPane.YES_OPTION) {
+                controller.deletarAlbum(idA);
+                atualizarListasAlbuns();
+            }
+        });
+        pBotoesAlbum.add(btnCriarAlbum); pBotoesAlbum.add(Box.createHorizontalStrut(10));
+        pBotoesAlbum.add(btnLancar); pBotoesAlbum.add(Box.createHorizontalStrut(10));
+        pBotoesAlbum.add(btnDeletarAlbum);
+
+        // 3. Grupo de Botões: Gestão de Músicas
+        JPanel pBotoesMusica = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        pBotoesMusica.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JButton btnAddMusica = new JButton("Adicionar Música");
+        btnAddMusica.addActionListener(e -> {
+            if (cbMeusAlbuns.getSelectedItem() == null) return;
+            int idA = extrairId(cbMeusAlbuns.getSelectedItem().toString());
+
+            String titulo = JOptionPane.showInputDialog(panel, "Título da Música:");
+            if (titulo == null || titulo.trim().isEmpty()) return;
+
+            try {
+                int duracao = Integer.parseInt(JOptionPane.showInputDialog(panel, "Duração em minutos:"));
+                String genero = JOptionPane.showInputDialog(panel, "Gênero:");
+                String letra = JOptionPane.showInputDialog(panel, "Letra da Música (Opcional):");
+
+                if (controller.adicionarMusicaAlbum(idA, titulo, duracao, genero, letra != null ? letra : "")) {
+                    atualizarListasMusicas();
+                    JOptionPane.showMessageDialog(panel, "Música adicionada ao álbum!");
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(panel, "Duração inválida!", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        JButton btnRemoverMusica = new JButton("Remover Música");
+        btnRemoverMusica.addActionListener(e -> {
+            if (cbMeusAlbuns.getSelectedItem() == null || cbMinhasMusicas.getSelectedItem() == null) return;
+            int idA = extrairId(cbMeusAlbuns.getSelectedItem().toString());
+            int idM = extrairId(cbMinhasMusicas.getSelectedItem().toString());
+            if (controller.removerMusicaAlbum(idA, idM)) {
+                atualizarListasMusicas();
+                JOptionPane.showMessageDialog(panel, "Música removida e excluída!");
+            }
+        });
+        pBotoesMusica.add(btnAddMusica); pBotoesMusica.add(Box.createHorizontalStrut(10));
+        pBotoesMusica.add(btnRemoverMusica);
+
+        // 4. Grupo de Botões: Gestão da Equipe Técnica
+        JPanel pBotoesEquipe = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        pBotoesEquipe.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JButton btnAddEquipe = new JButton("+ Membro Equipe");
+        btnAddEquipe.addActionListener(e -> {
+            if (cbMinhasMusicas.getSelectedItem() == null) return;
+            int idM = extrairId(cbMinhasMusicas.getSelectedItem().toString());
+            String nome = JOptionPane.showInputDialog(panel, "Nome do Integrante da Equipe (Ex: Produtor, Guitarrista):");
+            if (nome != null && !nome.trim().isEmpty()) {
+                controller.adicionarMembroMusica(idM, nome);
+            }
+        });
+
+        JButton btnRemoverEquipe = new JButton("- Membro Equipe");
+        btnRemoverEquipe.addActionListener(e -> {
+            if (cbMinhasMusicas.getSelectedItem() == null) return;
+            int idM = extrairId(cbMinhasMusicas.getSelectedItem().toString());
+            String nome = JOptionPane.showInputDialog(panel, "Nome exato do membro para remover:");
+            if (nome != null) controller.removerMembroMusica(idM, nome);
+        });
+        pBotoesEquipe.add(btnAddEquipe); pBotoesEquipe.add(Box.createHorizontalStrut(10));
+        pBotoesEquipe.add(btnRemoverEquipe);
+
+        // Montagem estrutural
+        panel.add(pForm); panel.add(Box.createVerticalStrut(15));
+        panel.add(pBotoesAlbum); panel.add(Box.createVerticalStrut(15));
+        panel.add(pBotoesMusica); panel.add(Box.createVerticalStrut(15));
+        panel.add(pBotoesEquipe);
+
+        wrapper.add(panel, BorderLayout.NORTH);
+        return wrapper;
+    }
+
+    private void atualizarListasAlbuns() {
+        cbMeusAlbuns.removeAllItems();
+        for (Album a : controller.listarAlbunsCriador()) {
+            cbMeusAlbuns.addItem(a.getId() + " - " + a.getTitulo());
+        }
+        atualizarListasMusicas();
+    }
+
+    private void atualizarListasMusicas() {
+        cbMinhasMusicas.removeAllItems();
+        if (cbMeusAlbuns.getSelectedItem() == null) return;
+        int idAlbum = extrairId(cbMeusAlbuns.getSelectedItem().toString());
+        for (Musica m : controller.listarMusicasAlbum(idAlbum)) {
+            cbMinhasMusicas.addItem(m.getId() + " - " + m.getTitulo());
+        }
+    }
+
+    // ================== PAINEL DE PODCASTS E EPISÓDIOS ==================
+    private JPanel criarPainelPodcasts() {
+        JPanel wrapper = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JPanel pForm = new JPanel(new GridLayout(2, 2, 10, 10));
+        pForm.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
+        pForm.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        cbMeusPodcasts = new JComboBox<>();
+        cbMeusEpisodios = new JComboBox<>();
+        pForm.add(new JLabel("Selecione o Podcast:"));
+        pForm.add(cbMeusPodcasts);
+        pForm.add(new JLabel("Episódios deste Podcast:"));
+        pForm.add(cbMeusEpisodios);
+
+        cbMeusPodcasts.addActionListener(e -> atualizarListasEpisodios());
+
+        // Botões do Podcast
+        JPanel pBotoesPod = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        pBotoesPod.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JButton btnCriarPod = new JButton("Criar Novo Podcast");
+        btnCriarPod.addActionListener(e -> {
+            String nome = JOptionPane.showInputDialog(panel, "Nome do Podcast:");
+            if (nome != null && !nome.trim().isEmpty()) {
+                String tema = JOptionPane.showInputDialog(panel, "Tema/Gênero do Show:");
+                controller.criarPodcast(nome, tema != null ? tema : "Geral");
+                atualizarListasPodcasts();
+            }
+        });
+
+        JButton btnDeletarPod = new JButton("Deletar Podcast");
+        btnDeletarPod.addActionListener(e -> {
+            if (cbMeusPodcasts.getSelectedItem() == null) return;
+            int idP = extrairId(cbMeusPodcasts.getSelectedItem().toString());
+            int conf = JOptionPane.showConfirmDialog(panel, "Deletar este show e todos os seus episódios?", "Aviso", JOptionPane.YES_NO_OPTION);
+            if (conf == JOptionPane.YES_OPTION) {
+                controller.deletarPodcast(idP);
+                atualizarListasPodcasts();
+            }
+        });
+        pBotoesPod.add(btnCriarPod); pBotoesPod.add(Box.createHorizontalStrut(10));
+        pBotoesPod.add(btnDeletarPod);
+
+        // Botões do Episódio
+        JPanel pBotoesEp = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        pBotoesEp.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JButton btnAddEp = new JButton("Adicionar Episódio");
+        btnAddEp.addActionListener(e -> {
+            if (cbMeusPodcasts.getSelectedItem() == null) return;
+            int idP = extrairId(cbMeusPodcasts.getSelectedItem().toString());
+
+            String titulo = JOptionPane.showInputDialog(panel, "Título do Episódio:");
+            if (titulo == null || titulo.trim().isEmpty()) return;
+
+            try {
+                int duracao = Integer.parseInt(JOptionPane.showInputDialog(panel, "Duração (min):"));
+                int numEp = Integer.parseInt(JOptionPane.showInputDialog(panel, "Número do Episódio:"));
+
+                if (controller.adicionarEpPodcast(idP, titulo, duracao, numEp)) {
+                    atualizarListasEpisodios();
+                    JOptionPane.showMessageDialog(panel, "Episódio inserido com sucesso!");
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(panel, "Dados numéricos inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        JButton btnRemoverEp = new JButton("Remover Episódio");
+        btnRemoverEp.addActionListener(e -> {
+            if (cbMeusPodcasts.getSelectedItem() == null || cbMeusEpisodios.getSelectedItem() == null) return;
+            int idP = extrairId(cbMeusPodcasts.getSelectedItem().toString());
+            int idE = extrairId(cbMeusEpisodios.getSelectedItem().toString());
+            if (controller.removerEpPodcast(idP, idE)) {
+                atualizarListasEpisodios();
+                JOptionPane.showMessageDialog(panel, "Episódio removido!");
+            }
+        });
+        pBotoesEp.add(btnAddEp); pBotoesEp.add(Box.createHorizontalStrut(10));
+        pBotoesEp.add(btnRemoverEp);
+
+        // Botões de Convidados
+        JPanel pBotoesConv = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        pBotoesConv.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JButton btnAddConv = new JButton("+ Adicionar Convidado");
+        btnAddConv.addActionListener(e -> {
+            if (cbMeusEpisodios.getSelectedItem() == null) return;
+            int idE = extrairId(cbMeusEpisodios.getSelectedItem().toString());
+            String nome = JOptionPane.showInputDialog(panel, "Nome do Convidado:");
+            if (nome != null && !nome.trim().isEmpty()) {
+                controller.adicionarConvidadoEpisodio(idE, nome);
+            }
+        });
+
+        JButton btnRemoverConv = new JButton("- Remover Convidado");
+        btnRemoverConv.addActionListener(e -> {
+            if (cbMeusEpisodios.getSelectedItem() == null) return;
+            int idE = extrairId(cbMeusEpisodios.getSelectedItem().toString());
+            String nome = JOptionPane.showInputDialog(panel, "Nome exato do convidado para remover:");
+            if (nome != null) controller.removerConvidadoEpisodio(idE, nome);
+        });
+        pBotoesConv.add(btnAddConv); pBotoesConv.add(Box.createHorizontalStrut(10));
+        pBotoesConv.add(btnRemoverConv);
+
+        panel.add(pForm); panel.add(Box.createVerticalStrut(15));
+        panel.add(pBotoesPod); panel.add(Box.createVerticalStrut(15));
+        panel.add(pBotoesEp); panel.add(Box.createVerticalStrut(15));
+        panel.add(pBotoesConv);
+
+        wrapper.add(panel, BorderLayout.NORTH);
+        return wrapper;
+    }
+
+    private void atualizarListasPodcasts() {
+        cbMeusPodcasts.removeAllItems();
+        for (Podcast p : controller.listarPodcastCriador()) {
+            cbMeusPodcasts.addItem(p.getId() + " - " + p.getNome());
+        }
+        atualizarListasEpisodios();
+    }
+
+    private void atualizarListasEpisodios() {
+        cbMeusEpisodios.removeAllItems();
+        if (cbMeusPodcasts.getSelectedItem() == null) return;
+        int idPodcast = extrairId(cbMeusPodcasts.getSelectedItem().toString());
+        for (Episodio ep : controller.listarEpisodiosPodcast(idPodcast)) {
+            cbMeusEpisodios.addItem(ep.getId() + " - " + ep.getTitulo() + " (Ep. " + ep.getNumEpisodio() + ")");
+        }
+    }
+
+    // ================== PAINEL DE PERFIL DO CRIADOR ==================
+    private JPanel criarPainelPerfil() {
+        JPanel wrapper = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // 1. Dados Pessoais de Conta
+        JPanel pFormDados = new JPanel(new GridLayout(2, 2, 10, 10));
+        pFormDados.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
+        pFormDados.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JTextField txtNome = new JTextField();
+        JComboBox<String> cbSexo = new JComboBox<>(new String[]{"M", "F", "Outro", "Prefiro não informar"});
+        pFormDados.add(new JLabel("Nome de Perfil:")); pFormDados.add(txtNome);
+        pFormDados.add(new JLabel("Sexo:")); pFormDados.add(cbSexo);
+
+        JPanel pBotDados = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        pBotDados.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JButton btnSalvarDados = new JButton("Salvar Dados Básicos");
+        btnSalvarDados.addActionListener(e -> {
+            if (!txtNome.getText().trim().isEmpty()) {
+                controllerPerfil.atualizarDadosPessoais(txtNome.getText().trim(), (String) cbSexo.getSelectedItem());
+                JOptionPane.showMessageDialog(panel, "Dados básicos atualizados!");
+            }
+        });
+        pBotDados.add(btnSalvarDados);
+
+        // 2. Perfil Artístico Específico do Criador
+        JPanel pFormArtista = new JPanel(new GridLayout(2, 2, 10, 10));
+        pFormArtista.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
+        pFormArtista.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JTextField txtNomeArtistico = new JTextField();
+        JTextField txtBiografia = new JTextField(); // Linha curta para a bio na interface resumida
+        pFormArtista.add(new JLabel("Nome Artístico:")); pFormArtista.add(txtNomeArtistico);
+        pFormArtista.add(new JLabel("Biografia:")); pFormArtista.add(txtBiografia);
+
+        JPanel pBotArtista = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        pBotArtista.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JButton btnSalvarArtista = new JButton("Salvar Perfil Artístico");
+        btnSalvarArtista.addActionListener(e -> {
+            String art = txtNomeArtistico.getText().trim();
+            String bio = txtBiografia.getText().trim();
+            if (controllerPerfil.atualizarPerfilCriador(art, bio)) {
+                JOptionPane.showMessageDialog(panel, "Perfil artístico publicado com sucesso!");
+            }
+        });
+        pBotArtista.add(btnSalvarArtista);
+
+        // 3. Segurança (Trocar Senha)
+        JPanel pFormSenha = new JPanel(new GridLayout(2, 2, 10, 10));
+        pFormSenha.setMaximumSize(new Dimension(Short.MAX_VALUE, 60));
+        pFormSenha.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JPasswordField txtAntiga = new JPasswordField();
+        JPasswordField txtNova = new JPasswordField();
+        pFormSenha.add(new JLabel("Senha Antiga:")); pFormSenha.add(txtAntiga);
+        pFormSenha.add(new JLabel("Nova Senha:")); pFormSenha.add(txtNova);
+
+        JPanel pBotSenha = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        pBotSenha.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JButton btnSenha = new JButton("Alterar Senha");
+        btnSenha.addActionListener(e -> {
+            if (controllerPerfil.trocarSenha(new String(txtAntiga.getPassword()), new String(txtNova.getPassword()))) {
+                JOptionPane.showMessageDialog(panel, "Senha modificada de forma segura!");
+                txtAntiga.setText(""); txtNova.setText("");
+            }
+        });
+        pBotSenha.add(btnSenha);
+
+        // Agrupamento com os separadores JSeparator
+        panel.add(pFormDados); panel.add(Box.createVerticalStrut(10));
+        panel.add(pBotDados); panel.add(Box.createVerticalStrut(15));
+        panel.add(new JSeparator()); panel.add(Box.createVerticalStrut(15));
+
+        panel.add(pFormArtista); panel.add(Box.createVerticalStrut(10));
+        panel.add(pBotArtista); panel.add(Box.createVerticalStrut(15));
+        panel.add(new JSeparator()); panel.add(Box.createVerticalStrut(15));
+
+        panel.add(pFormSenha); panel.add(Box.createVerticalStrut(10));
+        panel.add(pBotSenha);
+
+        wrapper.add(panel, BorderLayout.NORTH);
+        return wrapper;
     }
 }

@@ -312,7 +312,7 @@ public class AdministradorDAO {
 		
 		// Lógica para recuperar as datas em formato de texto no banco de dados.
 		if (dataTexto != null && !dataTexto.isEmpty()) {
-			if (dataTexto.contains("-")) {
+			if (dataTexto.contains("-") && dataTexto.indexOf("-") > 0) {
 				// Formato texto (SQL).
 				aniversario = LocalDate.parse(dataTexto.substring(0, 10));
 			} else {

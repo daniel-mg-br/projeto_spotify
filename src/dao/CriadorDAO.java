@@ -325,7 +325,7 @@ public class CriadorDAO {
 		
 		// Lógica para converter o texto com a data no banco de dados para um LocalDate.
 		if (dataTexto != null && !dataTexto.isEmpty()) {
-			if (dataTexto.contains("-")) {
+			if (dataTexto.contains("-") && dataTexto.indexOf("-") > 0) {
 				aniversario = LocalDate.parse(dataTexto.substring(0, 10));
 			} else {
 				try {

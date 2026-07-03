@@ -347,14 +347,21 @@ public class ControllerCriador {
      * @return Retorna true se a operação for bem sucedida, e false se não.
      */
     public boolean adicionarConvidadoEpisodio(int idEpisodio, String nomeConvidado) {
-        Criador criador = this.getCriadorLogado();
+    	Criador criador = this.getCriadorLogado();
         Episodio episodio = this.episodioDAO.buscarId(idEpisodio);
         
         if (criador == null || episodio == null || nomeConvidado == null || nomeConvidado.trim().isEmpty()) return false;
         
-        // Segurança: Verifica se o episódio pertence a algum podcast deste criador
-        boolean pertenceAoCriador = criador.getPodcasts().stream()
-            .anyMatch(podcast -> podcast.getEpisodios().stream().anyMatch(ep -> ep.getId() == idEpisodio)); // [cite: 18]
+        // Segurança: varre o banco de dados atualizado para confirmar a propriedade.
+        boolean pertenceAoCriador = false;
+        for (Podcast p : this.podcastDAO.listarPodcasts()) {
+            if (p.getCriadorId() == criador.getId()) {
+                if (p.getEpisodios().stream().anyMatch(ep -> ep.getId() == idEpisodio)) {
+                    pertenceAoCriador = true;
+                    break;
+                }
+            }
+        }
             
         if (!pertenceAoCriador) {
             System.out.println("Erro: Acesso negado! Este episódio não pertence a você.");
@@ -363,7 +370,7 @@ public class ControllerCriador {
         
         boolean adicionou = episodio.adicionarConvidado(nomeConvidado);
         if (adicionou) {
-            this.episodioDAO.atualizar(episodio); // Sincroniza com o banco
+            this.episodioDAO.atualizar(episodio); // Sincroniza com o banco.
             System.out.println("Convidado adicionado ao episódio com sucesso!");
             return true;
         }
@@ -380,13 +387,20 @@ public class ControllerCriador {
      * @return Retorna true se a operação for bem sucedida, e false se não.
      */
     public boolean removerConvidadoEpisodio(int idEpisodio, String nomeConvidado) {
-        Criador criador = this.getCriadorLogado();
+    	Criador criador = this.getCriadorLogado();
         Episodio episodio = this.episodioDAO.buscarId(idEpisodio);
         
         if (criador == null || episodio == null) return false;
         
-        boolean pertenceAoCriador = criador.getPodcasts().stream()
-            .anyMatch(podcast -> podcast.getEpisodios().stream().anyMatch(ep -> ep.getId() == idEpisodio));
+        boolean pertenceAoCriador = false;
+        for (Podcast p : this.podcastDAO.listarPodcasts()) {
+            if (p.getCriadorId() == criador.getId()) {
+                if (p.getEpisodios().stream().anyMatch(ep -> ep.getId() == idEpisodio)) {
+                    pertenceAoCriador = true;
+                    break;
+                }
+            }
+        }
             
         if (!pertenceAoCriador) return false;
         
@@ -409,14 +423,21 @@ public class ControllerCriador {
      * @return Retorna true se a operação for bem sucedida, e false se não.
      */
     public boolean adicionarMembroMusica(int idMusica, String nomeMembro) {
-        Criador criador = this.getCriadorLogado();
+    	Criador criador = this.getCriadorLogado();
         Musica musica = this.musicaDAO.buscarId(idMusica);
         
         if (criador == null || musica == null || nomeMembro == null || nomeMembro.trim().isEmpty()) return false;
         
-        // Segurança: Verifica se a música pertence a algum álbum deste criador
-        boolean pertenceAoCriador = criador.getDiscografia().stream()
-            .anyMatch(album -> album.getMusicas().stream().anyMatch(m -> m.getId() == idMusica));
+        // Segurança: varre o banco de dados atualizado para confirmar a propriedade
+        boolean pertenceAoCriador = false;
+        for (Album a : this.albumDAO.listarAlbuns()) {
+            if (a.getCriadorId() == criador.getId()) {
+                if (a.getMusicas().stream().anyMatch(m -> m.getId() == idMusica)) {
+                    pertenceAoCriador = true;
+                    break;
+                }
+            }
+        }
             
         if (!pertenceAoCriador) {
             System.out.println("Erro: Acesso negado! Esta música não pertence a você.");
@@ -447,14 +468,21 @@ public class ControllerCriador {
         
         if (criador == null || musica == null) return false;
         
-        boolean pertenceAoCriador = criador.getDiscografia().stream()
-            .anyMatch(album -> album.getMusicas().stream().anyMatch(m -> m.getId() == idMusica));
+        boolean pertenceAoCriador = false;
+        for (Album a : this.albumDAO.listarAlbuns()) {
+            if (a.getCriadorId() == criador.getId()) {
+                if (a.getMusicas().stream().anyMatch(m -> m.getId() == idMusica)) {
+                    pertenceAoCriador = true;
+                    break;
+                }
+            }
+        }
             
         if (!pertenceAoCriador) return false;
         
         boolean removeu = musica.removerMembroEquipe(nomeMembro); 
         if (removeu) {
-            this.musicaDAO.atualizar(musica); // Sincroniza a remoção com o banco
+            this.musicaDAO.atualizar(musica); // Sincroniza a remoção com o banco.
             System.out.println("Membro removido da equipe!");
             return true;
         }
